@@ -31,7 +31,7 @@ ones_column = np.ones((X.shape[0], 1), dtype=np.float64)
 X_b = np.hstack((ones_column, X))
 U=np.asarray(u_lines, dtype=np.float64)
 
-# @harshul code is done but weight is not coming right, please look at the code and debug
+# 1.1 a done, TODO b
 ############################# PART A #############################
 def part_a(Y,X,U):   #outputs weight
         # eqn L(w)=||y-xw-b||^2
@@ -39,8 +39,8 @@ def part_a(Y,X,U):   #outputs weight
         # x=x+column of all 1s of n entries if n samples
         # differentiate the U term
         # final expression W=(X.T.U.X)-1(X.T.U.Y)
-        ux=X
-        uy=Y
+        ux=np.zeros_like(X)
+        uy=np.zeros_like(Y)
         for i in range(len(X)):
             ux[i]=U[i]*X[i]
         for i in range(len(X)):
@@ -59,5 +59,5 @@ if part=='a':
     if os.path.exists(pred_wt_file) == False:
         comment("Weight file not created for part a")
         exit()
-    print(part_a(Y,X_b,U))
+    weights_parta=part_a(Y,X_b,U)
 
