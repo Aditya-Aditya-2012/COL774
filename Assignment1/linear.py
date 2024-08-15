@@ -97,7 +97,7 @@ def k_fold_cross_validation(X, Y, k, λ):
     #set k=10
     for i in range(k):
         start = i * fold_size
-        end = start + fold_size if i != k - 1 else n_samples
+        end = start + fold_size 
         
         test_indices = indices[start:end]
         train_indices = np.concatenate([indices[:start], indices[end:]])
@@ -145,6 +145,7 @@ if part=='b':
     λ_inp=open(regu_file, "r")
     λ_lines=λ_inp.read().split('\n')
     λ_lines=λ_lines[:-1]
+
     y=train.iloc[:, -1]
     x=train.iloc[:, :-1]
     Y=y.to_numpy(dtype=np.float64)
@@ -152,6 +153,9 @@ if part=='b':
     ones_column = np.ones((X.shape[0], 1), dtype=np.float64)
     X_b = np.hstack((ones_column, X))
     λ_values=np.asarray(λ_lines, dtype=np.float64)
+
+    X_b_new = X_b[:-4]
+    Y_new = Y[:-4]
 
  ###################### PREPROCESSING TEST ########################
 
@@ -163,13 +167,14 @@ if part=='b':
 
 ############################ OUTPUT ###############################
     
-    best_λ, best_score=find_best_λ(X_b, Y, λ_values, 10)
-    weights_partb=ridge_regression(Y, X_b, best_λ)
+    best_λ, best_score=find_best_λ(X_b_new, Y_new, λ_values, 10)
+    weights_partb=ridge_regression(Y_new, X_b_new, best_λ)
     Y_pr=X_b_tst@weights_partb
+
     np.savetxt(pred_file, Y_pr, delimiter='\n', fmt='%f')
     np.savetxt(pred_wt_file, weights_partb, delimiter='\n', fmt='%f')
+    
     with open(best_λ_file, 'w') as file:
         file.write(f'{best_λ}\n')
     
     
-
