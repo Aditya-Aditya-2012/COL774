@@ -1,4 +1,4 @@
-# Root Mean Squared Error of the best 90% predictions: 9506.458067301632
+# Root Mean Squared Error of the best 90% predictions: 9492.562728649247
 import sys
 import numpy as np
 import pandas as pd
@@ -20,7 +20,7 @@ y_train = train_df[target_column]
 X_test = test_df
 
 # Identify low cardinality features
-low_cardinality_features = [col for col in X_train.columns if X_train[col].nunique() <= 4]
+low_cardinality_features = [col for col in X_train.columns if X_train[col].nunique() <= 5]
 
 # One-Hot Encoding for low cardinality features
 ohe = OneHotEncoder(drop='first', sparse_output=False)
