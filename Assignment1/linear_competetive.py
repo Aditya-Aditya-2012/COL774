@@ -1,3 +1,4 @@
+#Root Mean Squared Error of the best 90% predictions: 12982.996546496075
 import sys
 import numpy as np
 import pandas as pd
