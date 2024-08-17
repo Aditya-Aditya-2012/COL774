@@ -1,9 +1,9 @@
-# Root Mean Squared Error of the best 90% predictions: 12904.396498844155
+# Root Mean Squared Error of the best 90% predictions: 9506.458067301632
 import sys
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
-from sklearn.linear_model import LassoLars, LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 
 # Load data
 train_file = sys.argv[1]
@@ -43,17 +43,23 @@ poly = PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)
 X_train_poly = poly.fit_transform(X_train_scaled)
 X_test_poly = poly.transform(X_test_scaled)
 
-# Feature Selection with LassoLars
-lasso_lars = LassoLars(alpha=0.1)  # You can adjust alpha based on cross-validation
-lasso_lars.fit(X_train_poly, y_train)
+# Compute weights for each sample to reduce the influence of outliers
+# Here we use the distance from the median as a simple method
+errors = np.abs(y_train - np.median(y_train))
+weights = np.where(errors > np.percentile(errors, 90), 0, 1.0)  # 0 weight for top 10% outliers
 
-selected_features_mask = lasso_lars.coef_ != 0
+# Feature Selection or Linear Regression with regularization (using Ridge with the best lambda)
+ridge = Ridge(alpha=5)  # The best lambda from previous Ridge regression analysis
+ridge.fit(X_train_poly, y_train, sample_weight=weights)
+
+# Select the features with non-zero coefficients
+selected_features_mask = np.abs(ridge.coef_) > 1e-5
 X_train_selected = X_train_poly[:, selected_features_mask]
 X_test_selected = X_test_poly[:, selected_features_mask]
 
-# Train the Linear Regression model on the selected features
+# Train the Linear Regression model on the selected features (with weighted samples)
 linear_reg = LinearRegression()
-linear_reg.fit(X_train_selected, y_train)
+linear_reg.fit(X_train_selected, y_train, sample_weight=weights)
 
 y_pred = linear_reg.predict(X_test_selected)
 
