@@ -1,4 +1,4 @@
-# Root Mean Squared Error of the best 90% predictions: 9492.562728649247
+# Root Mean Squared Error of the best 90% predictions: 9565.30513462095
 import sys
 import numpy as np
 import pandas as pd
@@ -52,10 +52,10 @@ weights = np.where(errors > np.percentile(errors, 90), 0, 1.0)  # 0 weight for t
 ridge = Ridge(alpha=5)  # The best lambda from previous Ridge regression analysis
 ridge.fit(X_train_poly, y_train, sample_weight=weights)
 
-# Select the features with non-zero coefficients
-selected_features_mask = np.abs(ridge.coef_) > 1e-5
-X_train_selected = X_train_poly[:, selected_features_mask]
-X_test_selected = X_test_poly[:, selected_features_mask]
+# Select the top 300 features based on the absolute value of the coefficients
+top_300_indices = np.argsort(np.abs(ridge.coef_))[-300:]
+X_train_selected = X_train_poly[:, top_300_indices]
+X_test_selected = X_test_poly[:, top_300_indices]
 
 # Train the Linear Regression model on the selected features (with weighted samples)
 linear_reg = LinearRegression()
@@ -64,3 +64,4 @@ linear_reg.fit(X_train_selected, y_train, sample_weight=weights)
 y_pred = linear_reg.predict(X_test_selected)
 
 np.savetxt(output_file, y_pred, fmt='%.6f')
+
