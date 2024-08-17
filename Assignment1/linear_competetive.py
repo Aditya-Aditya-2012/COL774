@@ -1,10 +1,9 @@
-#Root Mean Squared Error of the best 90% predictions: 12982.996546496075
+# Root Mean Squared Error of the best 90% predictions: 12904.396498844155
 import sys
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, PolynomialFeatures
-from sklearn.linear_model import LassoCV
-from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.linear_model import LassoLars, LinearRegression
 
 # Load data
 train_file = sys.argv[1]
@@ -44,16 +43,18 @@ poly = PolynomialFeatures(degree=2, interaction_only=False, include_bias=False)
 X_train_poly = poly.fit_transform(X_train_scaled)
 X_test_poly = poly.transform(X_test_scaled)
 
-# Feature Selection with SelectKBest (select a maximum of 300 features)
-k = min(300, X_train_poly.shape[1])
-selector = SelectKBest(score_func=f_regression, k=k)
-X_train_selected = selector.fit_transform(X_train_poly, y_train)
-X_test_selected = selector.transform(X_test_poly)
+# Feature Selection with LassoLars
+lasso_lars = LassoLars(alpha=0.1)  # You can adjust alpha based on cross-validation
+lasso_lars.fit(X_train_poly, y_train)
 
-# Train the LassoCV model (with cross-validation to find the best alpha)
-lasso = LassoCV(cv=5, random_state=42, max_iter=10000)
-lasso.fit(X_train_selected, y_train)
+selected_features_mask = lasso_lars.coef_ != 0
+X_train_selected = X_train_poly[:, selected_features_mask]
+X_test_selected = X_test_poly[:, selected_features_mask]
 
-y_pred = lasso.predict(X_test_selected)
+# Train the Linear Regression model on the selected features
+linear_reg = LinearRegression()
+linear_reg.fit(X_train_selected, y_train)
+
+y_pred = linear_reg.predict(X_test_selected)
 
 np.savetxt(output_file, y_pred, fmt='%.6f')
