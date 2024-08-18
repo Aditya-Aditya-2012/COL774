@@ -1,4 +1,4 @@
-# Root Mean Squared Error of the best 90% predictions: 9565.30513462095
+# Root Mean Squared Error of the best 90% predictions: 9565.194675014678
 import sys
 import numpy as np
 import pandas as pd
@@ -44,24 +44,29 @@ X_train_poly = poly.fit_transform(X_train_scaled)
 X_test_poly = poly.transform(X_test_scaled)
 
 # Compute weights for each sample to reduce the influence of outliers
-# Here we use the distance from the median as a simple method
 errors = np.abs(y_train - np.median(y_train))
 weights = np.where(errors > np.percentile(errors, 90), 0, 1.0)  # 0 weight for top 10% outliers
 
-# Feature Selection or Linear Regression with regularization (using Ridge with the best lambda)
-ridge = Ridge(alpha=5)  # The best lambda from previous Ridge regression analysis
+# Ridge regression with the best lambda
+ridge = Ridge(alpha=5)
 ridge.fit(X_train_poly, y_train, sample_weight=weights)
 
-# Select the top 300 features based on the absolute value of the coefficients
-top_300_indices = np.argsort(np.abs(ridge.coef_))[-300:]
+# Feature importance based on Ridge coefficients
+feature_importance = np.abs(ridge.coef_)
+
+# Select the top 300 features based on importance
+top_300_indices = np.argsort(feature_importance)[-300:]
 X_train_selected = X_train_poly[:, top_300_indices]
 X_test_selected = X_test_poly[:, top_300_indices]
 
-# Train the Linear Regression model on the selected features (with weighted samples)
-linear_reg = LinearRegression()
-linear_reg.fit(X_train_selected, y_train, sample_weight=weights)
+# Apply feature importance weights to selected features
+X_train_weighted = X_train_selected * feature_importance[top_300_indices]
+X_test_weighted = X_test_selected * feature_importance[top_300_indices]
 
-y_pred = linear_reg.predict(X_test_selected)
+# Train the Linear Regression model on the weighted features (with weighted samples)
+linear_reg = LinearRegression()
+linear_reg.fit(X_train_weighted, y_train, sample_weight=weights)
+
+y_pred = linear_reg.predict(X_test_weighted)
 
 np.savetxt(output_file, y_pred, fmt='%.6f')
-
