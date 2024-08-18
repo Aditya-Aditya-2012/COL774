@@ -1,4 +1,4 @@
-# Root Mean Squared Error of the best 90% predictions: 9565.194675014678
+# Comment :=>> Objective Function obtained on the test set = 9565.137615910895
 import sys
 import numpy as np
 import pandas as pd
@@ -54,14 +54,14 @@ ridge.fit(X_train_poly, y_train, sample_weight=weights)
 # Feature importance based on Ridge coefficients
 feature_importance = np.abs(ridge.coef_)
 
-# Select the top 300 features based on importance
-top_300_indices = np.argsort(feature_importance)[-300:]
-X_train_selected = X_train_poly[:, top_300_indices]
-X_test_selected = X_test_poly[:, top_300_indices]
+# Select the top 299 features based on importance (as want strictly less than 300 features)
+top_299_indices = np.argsort(feature_importance)[-299:]
+X_train_selected = X_train_poly[:, top_299_indices]
+X_test_selected = X_test_poly[:, top_299_indices]
 
 # Apply feature importance weights to selected features
-X_train_weighted = X_train_selected * feature_importance[top_300_indices]
-X_test_weighted = X_test_selected * feature_importance[top_300_indices]
+X_train_weighted = X_train_selected * feature_importance[top_299_indices]
+X_test_weighted = X_test_selected * feature_importance[top_299_indices]
 
 # Train the Linear Regression model on the weighted features (with weighted samples)
 linear_reg = LinearRegression()
