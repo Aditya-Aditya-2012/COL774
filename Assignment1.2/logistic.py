@@ -2,16 +2,14 @@ import numpy as np
 import pandas as pd
 import sys
 
-# Computes the softmax probabilities for each class given the logits.
-def softmax(z):
-    exp_z = np.exp(z - np.max(z, axis=1, keepdims=True))
-    return exp_z / np.sum(exp_z, axis=1, keepdims=True)
-
 # Computes the modified log-likelihood loss for weighted logistic regression.
 def compute_loss(X, y, W, freq):
     m = X.shape[0]
     logits = X @ W
-    probs = softmax(logits)
+    
+    exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+    probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+
     loss = 0
     for i in range(m):
         for j in range(W.shape[1]):
@@ -102,4 +100,3 @@ if __name__ == "__main__":
     params_file = sys.argv[3]
     output_file = sys.argv[4]
     main(task, train_file, params_file, output_file)
-    
