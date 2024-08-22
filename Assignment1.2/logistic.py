@@ -55,7 +55,7 @@ def ternary_search(X, y, W, freq, g, eta0):
     return (eta_l + eta_h) / 2
 
 # Executes mini-batch gradient descent with exact line search to update weights.
-def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0):
+def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k=0, train_strat):
     m, n = X.shape
     for epoch in range(epochs):
         for i in range(0, m, batch_size):
@@ -63,9 +63,14 @@ def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0):
             y_batch = y[i:i + batch_size]
             
             g = compute_gradient(X_batch, y_batch, W, freq)
-            eta = ternary_search(X_batch, y_batch, W, freq, g, eta0)
-            W -= eta * g
-
+            if(train_strat==1):
+                 W -= eta0 * g
+            elif(train_strat==2):
+                eta=eta0/(1+k*i)
+                W -= eta * g
+            else:
+                eta = ternary_search(X_batch, y_batch, W, freq, g, eta0)
+                W -= eta * g
     return W
 
 def main(task, train_file, params_file, output_file):
@@ -78,20 +83,27 @@ def main(task, train_file, params_file, output_file):
 
         with open(params_file, 'r') as f:
             params = f.read().splitlines()
-            batch_size = int(params[0])
-            eta0 = float(params[1])
+            train_strat = int(params[0])
+            k=0
+            if(train_strat==1):
+                eta0 = float(params[1])
+            elif(train_strat==2):
+                ln=params[1].strip()
+                eta0, k=ln.split(',')
+                eta0=float(eta0)
+                k=float(k)
+            else:
+                eta0 = float(params[1])
             epochs = int(params[2])
-            seed = int(params[3])
+            batch_size = int(params[3])
 
-        np.random.seed(seed)
-
-        n = X.shape[1]
-        k = len(np.unique(y))
-        W = np.zeros((n, k), dtype=np.float64)
+        m = X.shape[1]
+        n = len(np.unique(y))
+        W = np.zeros((m, n), dtype=np.float64)
         
-        freq = np.array([np.sum(y == j + 1) for j in range(k)], dtype=np.float64)
+        freq = np.array([np.sum(y == j + 1) for j in range(n)], dtype=np.float64)
         
-        W = mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0)
+        W = mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k, train_strat)
         np.savetxt(output_file, W)
 
 if __name__ == "__main__":
