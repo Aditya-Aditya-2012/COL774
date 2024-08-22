@@ -102,3 +102,4 @@ if __name__ == "__main__":
     params_file = sys.argv[3]
     output_file = sys.argv[4]
     main(task, train_file, params_file, output_file)
+    
