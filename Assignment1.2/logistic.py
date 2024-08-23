@@ -1,36 +1,65 @@
 import numpy as np
 import pandas as pd
+from scipy.special import softmax
+import math
 import sys
+
+
+
+def preprocess(train):
+    y_train = np.array(train['Race'])
+    train = train.drop(columns = ['Race'])
+
+
+    data = train
+    cols = train.columns
+    cols = cols[:-1]
+    data = pd.get_dummies(data, columns=cols, drop_first=True)
+    data = data.to_numpy()
+    data=np.c_[np.ones(data.shape[0]),data]
+    X_train = data[:train.shape[0], :]
+    y_encod=pd.get_dummies(y_train,columns=y_train)
+    y_encod=y_encod.to_numpy()
+    return X_train,y_encod
 
 # Computes the modified log-likelihood loss for weighted logistic regression.
 def compute_loss(X, y, W, freq):
-    m = X.shape[0]
-    logits = X @ W
-    
-    exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
-    probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
+    n = X.shape[0]
+    # logits = X @ W
+
+    # gw_j=np.exp(W[:, j].T@X[:, i])
+
+    # exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
+    # probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
 
     loss = 0
-    for i in range(m):
+    for i in range(n):
+        sumj=0
+        for j in range(W.shape[1]):
+            sumj+=np.exp(W[:, j]@X[i])
         for j in range(W.shape[1]):
             if y[i] == j + 1:
-                loss += np.log(probs[i, j]) / freq[j]
-    return -loss / (2 * m)
+                loss += np.log(np.exp(W[:, j]@X[i])/sumj) / freq[j]
+    return - loss / (2 * n)
 
 # Computes the gradient of the loss with respect to the weights.
 def compute_gradient(X, y, W, freq):
-    m, n = X.shape
+    n, m = X.shape
     k = W.shape[1]
-    logits = X @ W
-    probs = softmax(logits)
+    # logits = X @ W
+    # probs = softmax(logits)
     gradient = np.zeros(W.shape)
 
-    for i in range(m):
+    for i in range(n):
+        sumj=0
+        for j in range(W.shape[1]):
+            sumj+=np.exp(W[:, j]@X[i])
         for j in range(k):
-            indicator = (y[i] == j + 1)
-            gradient[:, j] += (indicator - probs[i, j]) * X[i] / freq[j]
+            indicator = float(y[i] == j + 1)
+            probs=np.exp(W[:, j]@X[i])/sumj
+            gradient[:, j] += (indicator - probs) * X[i] / freq[j]
     
-    return -gradient / (2 * m)
+    return - gradient / (2 * n)
 
 # Performs exact line search using ternary search to find the optimal learning rate.
 def ternary_search(X, y, W, freq, g, eta0):
@@ -55,7 +84,7 @@ def ternary_search(X, y, W, freq, g, eta0):
     return (eta_l + eta_h) / 2
 
 # Executes mini-batch gradient descent with exact line search to update weights.
-def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k=0, train_strat):
+def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, train_strat, k):
     m, n = X.shape
     for epoch in range(epochs):
         for i in range(0, m, batch_size):
@@ -64,7 +93,8 @@ def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k=0, tr
             
             g = compute_gradient(X_batch, y_batch, W, freq)
             if(train_strat==1):
-                 W -= eta0 * g
+                Y_p=softmax(np.dot(X_batch,W),axis=1)
+                W=np.subtract(W,eta0*np.dot(np.transpose(X_batch),np.subtract(Y_p,y_batch)))
             elif(train_strat==2):
                 eta=eta0/(1+k*i)
                 W -= eta * g
@@ -75,16 +105,25 @@ def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k=0, tr
 
 def main(task, train_file, params_file, output_file):
     train_data = pd.read_csv(train_file)
-    X = train_data.iloc[:, :-1].values
-    y = train_data.iloc[:, -1].values
+    x = train_data.iloc[:, :-1]
+    X=x.to_numpy(dtype=np.float64)
+    ones_column = np.ones((X.shape[0], 1), dtype=np.float64)
+    X = np.hstack((ones_column, X))
+    y = train_data.iloc[:, -1]
+    Y=y.to_numpy(dtype=np.float64)
+    train,y_train=preprocess(train_data)
+
     
     if task == 'a':
-        X = np.hstack([np.ones((X.shape[0], 1)), X])
-
+        # X = np.hstack([np.ones((X.shape[0], 1)), X])
+        train_strat=1
+        k=0
+        eta0=0
+        epochs=0
+        batch_size=0
         with open(params_file, 'r') as f:
             params = f.read().splitlines()
             train_strat = int(params[0])
-            k=0
             if(train_strat==1):
                 eta0 = float(params[1])
             elif(train_strat==2):
@@ -98,12 +137,11 @@ def main(task, train_file, params_file, output_file):
             batch_size = int(params[3])
 
         m = X.shape[1]
-        n = len(np.unique(y))
+        n = 4
         W = np.zeros((m, n), dtype=np.float64)
         
         freq = np.array([np.sum(y == j + 1) for j in range(n)], dtype=np.float64)
-        
-        W = mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, k, train_strat)
+        W = mini_batch_gradient_descent(train, y_train, W, freq, batch_size, epochs, eta0, train_strat, k)
         np.savetxt(output_file, W)
 
 if __name__ == "__main__":
