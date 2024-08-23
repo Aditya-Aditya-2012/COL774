@@ -21,8 +21,7 @@ def compute_loss(X, y, W, freq):
     n = X.shape[0]
     loss = 0
     for i in range(n):
-        max_val = np.max(X[i].dot(W))
-        sumj = np.sum(np.exp(X[i].dot(W) - max_val))
+        sumj = np.sum(np.exp(X[i].dot(W)))
         for j in range(W.shape[1]):
             if y[i, j] == 1:
                 loss += (X[i].dot(W[:, j]) - max_val - np.log(sumj)) / freq[j]
