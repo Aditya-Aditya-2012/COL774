@@ -1,72 +1,55 @@
 import numpy as np
 import pandas as pd
 from scipy.special import softmax
+from scipy.sparse import csr_matrix
 import math
 import sys
 
-
-
 def preprocess(train):
     y_train = np.array(train['Race'])
-    train = train.drop(columns = ['Race'])
+    train = train.drop(columns=['Race'])
 
-
-    data = train
-    cols = train.columns
-    cols = cols[:-1]
-    data = pd.get_dummies(data, columns=cols, drop_first=True)
-    data = data.to_numpy()
-    data=np.c_[np.ones(data.shape[0]),data]
-    X_train = data[:train.shape[0], :]
-    y_encod=pd.get_dummies(y_train,columns=y_train)
-    y_encod=y_encod.to_numpy()
-    return X_train,y_encod
+    X_train = train.to_numpy()
+    X_train = np.c_[np.ones(X_train.shape[0]), X_train]  
+    
+    y_encod = pd.get_dummies(y_train).to_numpy()
+    
+    return X_train, y_encod
 
 # Computes the modified log-likelihood loss for weighted logistic regression.
 def compute_loss(X, y, W, freq):
     n = X.shape[0]
-    # logits = X @ W
-
-    # gw_j=np.exp(W[:, j].T@X[:, i])
-
-    # exp_logits = np.exp(logits - np.max(logits, axis=1, keepdims=True))
-    # probs = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
-
     loss = 0
     for i in range(n):
-        sumj=0
+        max_val = np.max(X[i].dot(W))
+        sumj = np.sum(np.exp(X[i].dot(W) - max_val))
         for j in range(W.shape[1]):
-            sumj+=np.exp(W[:, j]@X[i])
-        for j in range(W.shape[1]):
-            if y[i] == j + 1:
-                loss += np.log(np.exp(W[:, j]@X[i])/sumj) / freq[j]
-    return - loss / (2 * n)
+            if y[i, j] == 1:
+                loss += (X[i].dot(W[:, j]) - max_val - np.log(sumj)) / freq[j]
+    return -loss / (2 * n)
 
 # Computes the gradient of the loss with respect to the weights.
 def compute_gradient(X, y, W, freq):
     n, m = X.shape
     k = W.shape[1]
-    # logits = X @ W
-    # probs = softmax(logits)
     gradient = np.zeros(W.shape)
 
     for i in range(n):
-        sumj=0
-        for j in range(W.shape[1]):
-            sumj+=np.exp(W[:, j]@X[i])
+        exp_values = np.exp(X[i].dot(W))
+        sumj = np.sum(exp_values)
         for j in range(k):
-            indicator = float(y[i] == j + 1)
-            probs=np.exp(W[:, j]@X[i])/sumj
+            indicator = y[i, j]
+            probs = exp_values[j] / sumj
             gradient[:, j] += (indicator - probs) * X[i] / freq[j]
     
-    return - gradient / (2 * n)
+    return -gradient / (2 * n)
 
 # Performs exact line search using ternary search to find the optimal learning rate.
 def ternary_search(X, y, W, freq, g, eta0):
     eta_l = 0
     eta_h = eta0
-    
-    while compute_loss(X, y, W - eta_h * g, freq) < compute_loss(X, y, W, freq):
+
+    while compute_loss(X, y, W - eta_h * g, freq) >= compute_loss(X, y, W, freq):
         eta_h *= 2
 
     for _ in range(20):
@@ -78,10 +61,14 @@ def ternary_search(X, y, W, freq, g, eta0):
 
         if loss1 > loss2:
             eta_l = eta1
+        elif loss1 < loss2:
+            eta_h = eta2
         else:
-            eta_h = eta2 #editted this in algo
+            eta_l = eta1
+            eta_h = eta2
 
     return (eta_l + eta_h) / 2
+
 
 # Executes mini-batch gradient descent with exact line search to update weights.
 def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, train_strat, k):
@@ -92,11 +79,10 @@ def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, train_s
             y_batch = y[i:i + batch_size]
             
             g = compute_gradient(X_batch, y_batch, W, freq)
-            if(train_strat==1):
-                Y_p=softmax(np.dot(X_batch,W),axis=1)
-                W=np.subtract(W,eta0*np.dot(np.transpose(X_batch),np.subtract(Y_p,y_batch)))
-            elif(train_strat==2):
-                eta=eta0/(1+k*i)
+            if train_strat == 1:
+                W -= eta0 * g
+            elif train_strat == 2:
+                eta = eta0 / (1 + k * i)
                 W -= eta * g
             else:
                 eta = ternary_search(X_batch, y_batch, W, freq, g, eta0)
@@ -105,43 +91,34 @@ def mini_batch_gradient_descent(X, y, W, freq, batch_size, epochs, eta0, train_s
 
 def main(task, train_file, params_file, output_file):
     train_data = pd.read_csv(train_file)
-    x = train_data.iloc[:, :-1]
-    X=x.to_numpy(dtype=np.float64)
-    ones_column = np.ones((X.shape[0], 1), dtype=np.float64)
-    X = np.hstack((ones_column, X))
-    y = train_data.iloc[:, -1]
-    Y=y.to_numpy(dtype=np.float64)
-    train,y_train=preprocess(train_data)
 
-    
+    X_train, y_train = preprocess(train_data)
+
     if task == 'a':
-        # X = np.hstack([np.ones((X.shape[0], 1)), X])
-        train_strat=1
-        k=0
-        eta0=0
-        epochs=0
-        batch_size=0
+        train_strat = 1
+        k = 0
+        eta0 = 0
+        epochs = 0
+        batch_size = 0
+        
         with open(params_file, 'r') as f:
             params = f.read().splitlines()
             train_strat = int(params[0])
-            if(train_strat==1):
+            if train_strat == 1:
                 eta0 = float(params[1])
-            elif(train_strat==2):
-                ln=params[1].strip()
-                eta0, k=ln.split(',')
-                eta0=float(eta0)
-                k=float(k)
+            elif train_strat == 2:
+                eta0, k = map(float, params[1].strip().split(','))
             else:
                 eta0 = float(params[1])
             epochs = int(params[2])
             batch_size = int(params[3])
 
-        m = X.shape[1]
-        n = 4
+        m = X_train.shape[1]
+        n = y_train.shape[1]
         W = np.zeros((m, n), dtype=np.float64)
         
-        freq = np.array([np.sum(y == j + 1) for j in range(n)], dtype=np.float64)
-        W = mini_batch_gradient_descent(train, y_train, W, freq, batch_size, epochs, eta0, train_strat, k)
+        freq = np.array([np.sum(y_train[:, j]) for j in range(n)], dtype=np.float64)
+        W = mini_batch_gradient_descent(X_train, y_train, W, freq, batch_size, epochs, eta0, train_strat, k)
         np.savetxt(output_file, W)
 
 if __name__ == "__main__":
