@@ -1,4 +1,5 @@
 #Assignment 1.2 part a
+
 import numpy as np
 import pandas as pd
 from scipy.special import softmax
@@ -6,9 +7,11 @@ from scipy.sparse import csr_matrix
 import math
 import sys
 from train_algos import *
+
 ##################################################
 ##################### DATA #######################
 ##################################################
+
 def dataloader(train_path, params_path):
     train = pd.read_csv(train_path)
     x = train.iloc[:, :-1]
@@ -27,15 +30,15 @@ def dataloader(train_path, params_path):
     #done, y of shape (n,4)
 
     #now, load params
-    k=0
-    lr=0
+    k=0.
+    lr=0.
     with open(params_path, 'r') as f:
             params = f.read().splitlines()
     train_strat = int(params[0])
     if train_strat == 2 :
-        lr, k = map(float, params[1].strip().split(','))
+        lr, k = map(np.float64, params[1].strip().split(','))
     else:
-        lr = float(params[1])
+        lr = np.float64(params[1])
     epochs = int(params[2])
     batch_size = int(params[3])
 
