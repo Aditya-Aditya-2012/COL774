@@ -56,22 +56,32 @@ def gradient(X, Y, W, freq) :
     return grad
 
 def constant_lr(X, Y, W, lr, epochs, batch_size, freq) :
-    n_batches = Y.shape[0] // batch_size
+    n_batches = Y.shape[0] / batch_size
 
+    if(n_batches > (Y.shape[0] // batch_size)) :
+        n_batches = 1 + (Y.shape[0] // batch_size)
+
+    else :
+        n_batches = Y.shape[0] // batch_size
+    
     for epoch in range(epochs) :
-        loss = 0
         for i in range(n_batches) :
             X_batch = np.float64(X[i*batch_size : (i+1)*batch_size])
             Y_batch = np.float64(Y[i*batch_size : (i+1)*batch_size])
 
             W -=  np.float64(lr)*gradient(X_batch, Y_batch, W, freq)
-            loss += loss_fn(X_batch, Y_batch, W, freq)
+            print(f"strat : {1} epoch : {epoch+1} batch : {i+1} loss : {loss_fn(X_batch, Y_batch, W, freq)}")
 
-        print(f"epoch : {epoch} loss : {np.mean(loss)}")
     return W
 
 def adaptive_lr(X, Y, W, lr, k, epochs, batch_size, freq) :
-    n_batches = Y.shape[0] // batch_size
+    n_batches = Y.shape[0] / batch_size
+
+    if(n_batches > (Y.shape[0] // batch_size)) :
+        n_batches = 1 + (Y.shape[0] // batch_size)
+
+    else :
+        n_batches = Y.shape[0] // batch_size
 
     for epoch in range(epochs) :
         for i in range(n_batches) :
@@ -79,6 +89,8 @@ def adaptive_lr(X, Y, W, lr, k, epochs, batch_size, freq) :
             Y_batch = np.float64(Y[i*batch_size : (i+1)*batch_size])
 
             W -=  np.float64(lr/(1 + k * (epoch+1)))*gradient(X_batch, Y_batch, W, freq)
+            print(f"strat : {2} epoch : {epoch+1} batch : {i+1} loss : {loss_fn(X_batch, Y_batch, W, freq)}")
+
     
     return W
 
@@ -104,10 +116,15 @@ def ternary_search(X, y, W, freq, g, eta0) :
     return (eta_l + eta_h) / 2
 
 def ternary_lr(X, Y, W, lr, epochs, batch_size, freq) :
-    n_batches = Y.shape[0] // batch_size
+    n_batches = Y.shape[0] / batch_size
+
+    if(n_batches > (Y.shape[0] // batch_size)) :
+        n_batches = 1 + (Y.shape[0] // batch_size)
+
+    else :
+        n_batches = Y.shape[0] // batch_size
 
     for epoch in range(epochs) :
-        loss = 0
         for i in range(n_batches) :
             X_batch = np.float64(X[i*batch_size : (i+1)*batch_size])
             Y_batch = np.float64(Y[i*batch_size : (i+1)*batch_size])
@@ -117,8 +134,7 @@ def ternary_lr(X, Y, W, lr, epochs, batch_size, freq) :
             lr = np.float64(ternary_search(X_batch, Y_batch, W, freq, g, np.float64(lr)))
 
             W -=  lr*g
-            loss += loss_fn(X_batch, Y_batch, W, freq)
 
-        print(f"epoch : {epoch} loss : {np.mean(loss)}")
+            print(f"strat : {3} epoch : {epoch+1} batch : {i+1} loss : {loss_fn(X_batch, Y_batch, W, freq)}")
     
     return W
