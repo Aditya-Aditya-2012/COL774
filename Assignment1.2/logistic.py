@@ -1,10 +1,8 @@
-#Assignment 1.2 part a
-
+# This file contains all the three training algos to be implemented
 import numpy as np
 import pandas as pd
 from scipy.special import softmax
 from scipy.sparse import csr_matrix
-import math
 import sys
 from train_algos import *
 
@@ -40,15 +38,15 @@ def dataloader(train_path, params_path):
     #done, y of shape (n,4)
 
     #now, load params
-    k=0.
-    lr=0.
+    k=0
+    lr=0
     with open(params_path, 'r') as f:
             params = f.read().splitlines()
     train_strat = int(params[0])
     if train_strat == 2 :
-        lr, k = map(np.float64, params[1].strip().split(','))
+        lr, k = map(float, params[1].strip().split(','))
     else:
-        lr = np.float64(params[1])
+        lr = float(params[1])
     epochs = int(params[2])
     batch_size = int(params[3])
 
@@ -58,13 +56,20 @@ def dataloader(train_path, params_path):
 ##################### part a #####################
 ##################################################
 
+task = sys.argv[1]
+train_path = sys.argv[2]
+params_path = sys.argv[3]
+output_file = sys.argv[4]
+
+X, Y, train_strat, lr, k, epochs, batch_size = dataloader(train_path, params_path)
+
 if task == 'a' :
-    X, Y, train_strat, lr, k, epochs, batch_size = dataloader(train_path, params_path_or_test_path)
     m = X.shape[1]
     classes = Y.shape[1]
 
     W = np.zeros((m, classes), dtype=np.float64)
     freq = np.array([np.sum(Y[:, j]) for j in range(classes)], dtype=np.float64)
+    print(freq)
         
     if train_strat == 1 :
         W = constant_lr(X, Y, W, lr, epochs, batch_size, freq)
@@ -125,58 +130,6 @@ def preprocess(train_path, test_path):
 ##################################################
 ##################### part b #####################
 ##################################################
-
-def initialize_weights(n_features, n_classes, method='zeros', mean=0.0, std=0.01):
-    
-    if method == 'zeros':
-        W = np.zeros((n_features, n_classes))
-    elif method == 'random':
-        W = np.random.uniform(-0.01, 0.01, (n_features, n_classes))
-    elif method == 'normal':
-        W = np.random.normal(mean, std, (n_features, n_classes))
-    else:
-        raise ValueError(f"Unknown initialization method: {method}")
-    
-    return W
-
-def hyperparameter_tuning(X_train, Y_train, X_test, y_freq) :
-
-    batch_size = 16
-    lr = 30
-    init_method = ['zeros']
-    epochs = 325
-    best_loss = float('inf')
-
-    start_time = time.time()
-                    
-    m = X_train.shape[1]
-    k = Y_train.shape[1]
-    W = initialize_weights( m, k, method = init_method[0] )
-
-    ki = 0.5 
-    W = adaptive_lr(X_train, Y_train, W, lr, ki, epochs, batch_size, y_freq)
-
-    loss = loss_fn(X_train, Y_train, W, y_freq)
-                    
-    elapsed_time = time.time() - start_time
-
-    softmax_probs = softmax(X_test.dot(W))
-
-    print(elapsed_time)
-
-    return W, softmax_probs
-
-
-if task == 'b':
-    test_path = params_path_or_test_path
-
-    X_train, Y_train, X_test, y_freq = preprocess(train_path, test_path)
-
-    best_W, softmax_probs = hyperparameter_tuning(X_train, Y_train, X_test, y_freq)
-
-    np.savetxt(output_file, best_W.flatten(), fmt='%.6f')
-
-    np.savetxt(modelpredictions_file, softmax_probs, delimiter=',', fmt='%.6f')
         
 
 
