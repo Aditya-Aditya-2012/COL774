@@ -14,6 +14,7 @@ def softmax(logits):
 
 
 def loss_fn(X, y, w, freq):
+
     n, d = X.shape
     k = w.shape[1]
 
@@ -73,6 +74,7 @@ def constant_lr(X, Y, W, lr, epochs, batch_size, freq) :
             print(f"strat : {1} epoch : {epoch+1} batch : {i+1} loss : {loss_fn(X_batch, Y_batch, W, freq)}")
 
     return W
+
 
 def adaptive_lr(X, Y, W, lr, k, epochs, batch_size, freq) :
     n_batches = Y.shape[0] / batch_size
