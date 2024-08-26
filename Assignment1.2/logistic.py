@@ -58,14 +58,10 @@ def dataloader(train_path, params_path):
 ##################### part a #####################
 ##################################################
 
-task = sys.argv[1]
-train_path = sys.argv[2]
-params_path = sys.argv[3]
-output_file = sys.argv[4]
-
-X, Y, train_strat, lr, k, epochs, batch_size = dataloader(train_path, params_path)
-
 if task == 'a' :
+    params_path = params_path_or_test_path
+    X, Y, train_strat, lr, k, epochs, batch_size = dataloader(train_path, params_path)
+
     m = X.shape[1]
     classes = Y.shape[1]
 
@@ -148,9 +144,9 @@ def initialize_weights(n_features, n_classes, method='zeros', mean=0.0, std=0.01
 def hyperparameter_tuning(X_train, Y_train, X_test, y_freq) :
 
     batch_size = 16
-    lr = 30
+    lr = 5
     init_method = ['zeros']
-    epochs = 325
+    epochs = 20
     best_loss = float('inf')
 
     start_time = time.time()
@@ -160,7 +156,7 @@ def hyperparameter_tuning(X_train, Y_train, X_test, y_freq) :
     W = initialize_weights( m, k, method = init_method[0] )
 
     ki = 0.5 
-    W = adaptive_lr(X_train, Y_train, W, lr, ki, epochs, batch_size, y_freq)
+    W = constant_lr(X_train, Y_train, W, lr, epochs, batch_size, y_freq)
 
     loss = loss_fn(X_train, Y_train, W, y_freq)
                     
