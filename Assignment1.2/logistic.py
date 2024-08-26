@@ -2,9 +2,6 @@
 
 import numpy as np
 import pandas as pd
-from scipy.special import softmax
-from scipy.sparse import csr_matrix
-import math
 import sys
 from train_algos import *
 

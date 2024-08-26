@@ -1,9 +1,6 @@
 # This file contains all the three training algos to be implemented
 
 import numpy as np
-import scipy
-import math
-from scipy.special import softmax
 
 # loss = -1/2n*(sumi(sumj({yi=j}log(g_wj(xi)))))
 # g_wj(x)=exp(wj.T.x)/sumk(exp(wi.T.x))
@@ -18,24 +15,15 @@ def loss_fn(X, y, w, freq):
     n, d = X.shape
     k = w.shape[1]
 
-    # Compute linear outputs
-    logits = np.dot(X, w)  # Shape (n, k)
+    logits = np.dot(X, w)  
+    g_wj_x = softmax(logits)  
 
-    # Apply softmax to get the predicted probabilities
-    g_wj_x = softmax(logits)  # Shape (n, k)
-
-    # Initialize the loss
     loss = 0
-
-    # Compute the loss for each class
     for j in range(k):
-        # Select the corresponding softmax output for class j where y is 1 for class j
-        selected_probs = g_wj_x[:, j][y[:, j] == 1]  # Shape (number of samples where y == j,)
+        selected_probs = g_wj_x[:, j][y[:, j] == 1]  
         
-        # Compute the weighted sum of log probabilities
         loss += -np.sum(np.log(selected_probs) / freq[j])
-    
-    # Average the loss and return
+
     loss = loss / (2 * n)
     
     return loss
@@ -57,6 +45,7 @@ def gradient(X, Y, W, freq) :
     return grad
 
 def constant_lr(X, Y, W, lr, epochs, batch_size, freq) :
+
     n_batches = Y.shape[0] / batch_size
 
     if(n_batches > (Y.shape[0] // batch_size)) :
@@ -77,6 +66,7 @@ def constant_lr(X, Y, W, lr, epochs, batch_size, freq) :
 
 
 def adaptive_lr(X, Y, W, lr, k, epochs, batch_size, freq) :
+
     n_batches = Y.shape[0] / batch_size
 
     if(n_batches > (Y.shape[0] // batch_size)) :
@@ -97,6 +87,7 @@ def adaptive_lr(X, Y, W, lr, k, epochs, batch_size, freq) :
     return W
 
 def ternary_search(X, y, W, freq, g, eta0) :
+
     eta_l = np.float64(0.0)
     eta_h = np.float64(eta0)
 
@@ -118,6 +109,7 @@ def ternary_search(X, y, W, freq, g, eta0) :
     return (eta_l + eta_h) / 2
 
 def ternary_lr(X, Y, W, lr, epochs, batch_size, freq) :
+    
     n_batches = Y.shape[0] / batch_size
 
     if(n_batches > (Y.shape[0] // batch_size)) :
