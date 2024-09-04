@@ -16,10 +16,10 @@ class NeuralNetwork:
             "fc4": np.random.randn(128, 1) * np.sqrt(2.0 / 128)
         }
         self.biases = {
-            "b1": np.zeros((1, 512)),
-            "b2": np.zeros((1, 256)),
-            "b3": np.zeros((1, 128)),
-            "b4": np.zeros((1, 1))
+            "fc1": np.zeros((256, 512)),
+            "fc2": np.zeros((256, 256)),
+            "fc3": np.zeros((256, 128)),
+            "fc4": np.zeros((256, 1))
         }
         self.weights = {k: v.astype(np.float64) for k, v in self.weights.items()}
         self.biases = {k: v.astype(np.float64) for k, v in self.biases.items()}
@@ -32,16 +32,16 @@ class NeuralNetwork:
         return z * (1 - z)
 
     def forward(self, X):
-        self.z1 = np.dot(X, self.weights["fc1"]) + self.biases["b1"]
+        self.z1 = np.dot(X, self.weights["fc1"]) + self.biases["fc1"]
         self.a1 = self.sigmoid(self.z1)
 
-        self.z2 = np.dot(self.a1, self.weights["fc2"]) + self.biases["b2"]
+        self.z2 = np.dot(self.a1, self.weights["fc2"]) + self.biases["fc2"]
         self.a2 = self.sigmoid(self.z2)
 
-        self.z3 = np.dot(self.a2, self.weights["fc3"]) + self.biases["b3"]
+        self.z3 = np.dot(self.a2, self.weights["fc3"]) + self.biases["fc3"]
         self.a3 = self.sigmoid(self.z3)
 
-        self.z4 = np.dot(self.a3, self.weights["fc4"]) + self.biases["b4"]
+        self.z4 = np.dot(self.a3, self.weights["fc4"]) + self.biases["fc4"]
         self.a4 = self.sigmoid(self.z4)
 
         return self.a4
@@ -49,12 +49,21 @@ class NeuralNetwork:
     def backward(self, X, y, output):
         m = X.shape[0]
 
+        print("weights['fc4'] shape:", self.weights["fc4"].shape)
+        print("biases['fc4'] shape:", self.biases["fc4"].shape)
+
+        print("output shape:", output.shape)
+
+
         # Compute the error at the output layer
         output_error = y - output
-        output_delta = output_error * self.sigmoid_derivative(output)
+        output_delta = np.transpose(self.sigmoid_derivative(output)) @ output_error
+
+        print("output_delta shape:", output_delta.shape)
+        print("self.weights['fc4'].T shape:", self.weights["fc4"].T.shape)
 
         # Compute errors and deltas for hidden layers
-        hidden_error_3 = np.dot(output_delta, self.weights["fc4"].T)
+        hidden_error_3 = np.dot(output_delta.T, self.weights["fc4"].T)
         hidden_delta_3 = hidden_error_3 * self.sigmoid_derivative(self.a3)
 
         hidden_error_2 = np.dot(hidden_delta_3, self.weights["fc3"].T)
@@ -64,17 +73,17 @@ class NeuralNetwork:
         hidden_delta_1 = hidden_error_1 * self.sigmoid_derivative(self.a1)
 
         # Update weights and biases using gradient descent
-        self.weights["fc4"] -= self.learning_rate * np.dot(self.a3.T, output_delta) / m
-        self.biases["b4"] -= self.learning_rate * np.sum(output_delta, axis=0, keepdims=True) / m
+        self.weights["fc4"] -= self.learning_rate * np.dot(self.a3.T, output_delta.T) / m
+        self.biases["fc4"] -= self.learning_rate * np.sum(output_delta.T, axis=0, keepdims=True) / m
 
         self.weights["fc3"] -= self.learning_rate * np.dot(self.a2.T, hidden_delta_3) / m
-        self.biases["b3"] -= self.learning_rate * np.sum(hidden_delta_3, axis=0, keepdims=True) / m
+        self.biases["fc3"] -= self.learning_rate * np.sum(hidden_delta_3, axis=0, keepdims=True) / m
 
         self.weights["fc2"] -= self.learning_rate * np.dot(self.a1.T, hidden_delta_2) / m
-        self.biases["b2"] -= self.learning_rate * np.sum(hidden_delta_2, axis=0, keepdims=True) / m
+        self.biases["fc2"] -= self.learning_rate * np.sum(hidden_delta_2, axis=0, keepdims=True) / m
 
         self.weights["fc1"] -= self.learning_rate * np.dot(X.T, hidden_delta_1) / m
-        self.biases["b1"] -= self.learning_rate * np.sum(hidden_delta_1, axis=0, keepdims=True) / m
+        self.biases["fc1"] -= self.learning_rate * np.sum(hidden_delta_1, axis=0, keepdims=True) / m
 
     def compute_loss(self, y_true, y_pred):
         m = y_true.shape[0]
