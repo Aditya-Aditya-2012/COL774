@@ -56,7 +56,11 @@ class NeuralNetwork:
 
 
         # Compute the error at the output layer
-        output_error = y - output
+        output_error = np.zeros((m, 1))
+
+        for i in range(0, m) :
+            output_error[i][0] = -((y[i]/output[i][0]) - (1-y[i]) / (1-output[i][0]))
+
         output_delta = np.transpose(self.sigmoid_derivative(output)) @ output_error
 
         print("output_delta shape:", output_delta.shape)
@@ -90,16 +94,11 @@ class NeuralNetwork:
         loss = -(1/m) * np.sum(y_true * np.log(y_pred + 1e-8) + (1 - y_true) * np.log(1 - y_pred + 1e-8))
         return loss
 
-    def train(self, X_train, y_train, X_val, y_val, epochs=15, batch_size=256):
-        num_batches = len(X_train) // batch_size
+    def train(self, train_loader, epochs=15, batch_size=256):
         
-        for epoch in range(epochs):
-            epoch_loss = 0
-            for batch in range(num_batches):
-                start_idx = batch * batch_size
-                end_idx = (batch + 1) * batch_size
-                X_batch, y_batch = X_train[start_idx:end_idx], y_train[start_idx:end_idx]
-                
+        for i in range(epochs) :
+            epoch_loss = 0.
+            for X_batch, y_batch in train_loader :
                 # Forward pass
                 Y_pred = self.forward(X_batch)
                 
@@ -111,47 +110,29 @@ class NeuralNetwork:
                 self.backward(X_batch, y_batch, Y_pred)
             
             print(f'Epoch {epoch+1}/{epochs}, Loss: {epoch_loss/num_batches}')
-            
-            # Validate
-            val_pred = self.forward(X_val)
-            val_loss = self.compute_loss(y_val, val_pred)
-            print(f'Validation Loss: {val_loss}')
+
         
         self.save_weights()
 
     def save_weights(self):
         weights_dict = {'weights': self.weights, 'bias': self.biases}
+        print(weights_dict["weights"]["fc1"])
         with open('weights.pkl', 'wb') as f:
             pickle.dump(weights_dict, f)
 
 
 def load_data(dataset_root):
-    # Load training and validation data
     train_csv = os.path.join(dataset_root, 'train.csv')
     val_csv = os.path.join(dataset_root, 'val.csv')
 
-    # Create the CustomImageDataset instances
     train_dataset = CustomImageDataset(root_dir=dataset_root, csv=train_csv, transform=numpy_transform)
     val_dataset = CustomImageDataset(root_dir=dataset_root, csv=val_csv, transform=numpy_transform)
 
-    # Create DataLoader instances
     train_loader = DataLoader(dataset=train_dataset, batch_size=256)
-    val_loader = DataLoader(dataset=val_dataset, batch_size=256)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=1)
 
-    # Function to convert DataLoader batches to numpy arrays
-    def loader_to_numpy(loader):
-        images_list = []
-        labels_list = []
-        for images, labels in loader:
-            images_list.append(images)
-            labels_list.append(labels)
-        return np.vstack(images_list), np.hstack(labels_list)
+    return train_loader, val_loader
 
-    # Convert loaders to numpy arrays
-    X_train, y_train = loader_to_numpy(train_loader)
-    X_val, y_val = loader_to_numpy(val_loader)
-
-    return X_train, y_train, X_val, y_val
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
@@ -161,13 +142,13 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     # Load data
-    X_train, y_train, X_val, y_val = load_data(args.dataset_root)
+    train_loader, val_loader = load_data(args.dataset_root)
 
     # Initialize neural network
     nn = NeuralNetwork(learning_rate=0.001)
 
     # Train the neural network
-    nn.train(X_train, y_train, X_val, y_val, epochs=15)
+    nn.train(train_loader, epochs=15)
 
     # Save the weights
     nn.save_weights()

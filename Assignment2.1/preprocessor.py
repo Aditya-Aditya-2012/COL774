@@ -85,7 +85,7 @@ class DataLoader:
 
 if __name__ == '__main__':
     # Root directory containing the 8 subfolders
-    root_dir = "" #Path to the dataset directory
+    root_dir = "dataA2/multi_dataset/" #Path to the dataset directory
     mode = 'train' #Set mode to 'train' for loading the train set for training. Set mode to 'val' for testing your model after training. 
 
     if mode == 'train': # Set mode to train when using the dataloader for training the model.
