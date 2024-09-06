@@ -71,12 +71,8 @@ def forward_prop(X, params) :
 
 def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
     m = Y.shape[0] 
-    N = X.shape[0]
-    # Y = Y.reshape(m, 1)
 
     output_delta = a4 - Y
-    # for i in range(0, m) :
-    #     output_delta[i][(Y[i])] -= 1
 
     he_3 = output_delta @ params["weights"]["fc4"].T
     hd_3 = he_3 * sigmoid_derivative(z3)
@@ -104,7 +100,6 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
 def cross_entropy_loss(y_true, y_pred):
     y_pred = np.clip(y_pred, 1e-12, 1.0)
     
-    # Compute the cross-entropy loss
     n_samples = y_true.shape[0]
     cross_entropy = -np.sum(y_true * np.log(y_pred)) / n_samples
     return cross_entropy
@@ -119,7 +114,7 @@ def save_weights(params, path, i):
         pickle.dump(params, f)
 
 def one_hot(Y) :
-    n_classes = np.max(Y) + 1  # Calculate the number of classes
+    n_classes = np.max(Y) + 1  
     Y_one_hot = np.eye(n_classes)[Y]
     return Y_one_hot
 
@@ -134,14 +129,14 @@ def train(epochs, train_loader, valid_loader, lr, path) :
             params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X_train, Y_train, params, lr)
             epoch_loss += cross_entropy_loss(Y_train, a4)
         
-        print(f'epoch : {i} loss : {epoch_loss}')
+        # print(f'epoch : {i} loss : {epoch_loss}')
         save_weights(params, path, i+1)
 
     valid_loss = 0.
     for X_val, Y_val in valid_loader :
         z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_val, params)
         valid_loss = cross_entropy_loss(Y_val, a4)
-    print(f'validation : {valid_loss}')
+    # print(f'validation : {valid_loss}')
     
     return params
 
@@ -154,9 +149,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train_loader, valid_loader = load_data(args.dataset_root)
-    params = train(epochs = 5, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path)
-    # print(params["bias"]["b1"])
-
+    params = train(epochs = 15, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path)
 
     
 

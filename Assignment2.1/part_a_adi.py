@@ -65,14 +65,9 @@ def forward_prop(X, params) :
 
 def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
     m = Y.shape[0] 
-    N = X.shape[0]
     Y = Y.reshape(m, 1)
-    # ouput_errror = a4 - Y
-    output_error = np.zeros((N, 1))
 
     output_error = - (Y/a4 - ((1-Y)/(1-a4)))
-    # for i in range(0, N) :
-    #     output_error[i][0] = -((Y[i]/a4[i][0]) - (1-Y[i]) / (1-a4[i][0]))
 
     output_delta = output_error * sigmoid_derivative(a4)
     
@@ -114,12 +109,11 @@ def train(epochs, train_loader, valid_loader, lr, path) :
     for i in range(epochs) :
         epoch_loss = 0.
         for X_train, Y_train in train_loader :
-            # print(Y_train.shape[0])
             z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_train, params)
             params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X_train, Y_train, params, lr)
             epoch_loss += compute_loss(Y_train, a4)
         
-        print(f'epoch : {i} loss : {epoch_loss}')
+        # print(f'epoch : {i} loss : {epoch_loss}')
         save_weights(params, path, i+1)
 
     valid_loss = 0.
@@ -127,6 +121,7 @@ def train(epochs, train_loader, valid_loader, lr, path) :
         z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_val, params)
         valid_loss = compute_loss(Y_val, a4)
     
+    # print(f'validation : {valid_loss}')
     return params
 
 
@@ -139,8 +134,6 @@ if __name__ == '__main__':
 
     train_loader, valid_loader = load_data(args.dataset_root)
     params = train(epochs = 5, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path)
-    # print(params["bias"]["b1"])
-
 
     
 

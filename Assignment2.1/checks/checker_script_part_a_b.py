@@ -36,6 +36,6 @@ def show_diff(yourfile, gtfile):
         print('max relative bias diff:', 100 * np.max(diff_bias), '%')
 
 if __name__ == '__main__':
-    your_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/results_multi/weights_0.pkl"  #Add path to your weights.pkl here for a particular epoch.
-    GT_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/checks/Multi_NN_1_wts_biases/init_weights.pkl" #Add path to the given weights.pkl here for a particular epoch to be used for comparison.
+    your_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/results_multi/weights_5.pkl"  #Add path to your weights.pkl here for a particular epoch.
+    GT_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/checks/Multi_NN_1_wts_biases/ep_5.pkl" #Add path to the given weights.pkl here for a particular epoch to be used for comparison.
     show_diff(your_weights_file, GT_weights_file)
