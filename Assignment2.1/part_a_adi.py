@@ -67,9 +67,7 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
     m = Y.shape[0] 
     Y = Y.reshape(m, 1)
 
-    output_error = - (Y/a4 - ((1-Y)/(1-a4)))
-
-    output_delta = output_error * sigmoid_derivative(a4)
+    output_delta = a4 - Y
     
     he_3 = output_delta @ params["weights"]["fc4"].T
     hd_3 = he_3 * sigmoid_derivative(a3)
