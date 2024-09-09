@@ -26,13 +26,15 @@ def init_params() :
             "fc1": np.random.randn(625, 512) * np.sqrt(2/(625)),
             "fc2": np.random.randn(512, 256) * np.sqrt(2/(512)),
             "fc3": np.random.randn(256, 128) * np.sqrt(2/(256)),
-            "fc4": np.random.randn(128, 8) * np.sqrt(2/(128))
+            "fc4": np.random.randn(128, 32) * np.sqrt(2/(128)),
+            "fc5": np.random.randn(32, 8) * np.sqrt(2/(32))
         }
     bias = {
             "b1": np.zeros((512,), dtype=np.float64),
             "b2": np.zeros((256,), dtype=np.float64),
             "b3": np.zeros((128,), dtype=np.float64),
-            "b4": np.zeros((8,), dtype=np.float64)
+            "b4": np.zeros((32,), dtype=np.float64),
+            "b5": np.zeros((8,), dtype=np.float64)
         }
     
     params = {
@@ -65,16 +67,22 @@ def forward_prop(X, params) :
     a3 = sigmoid(z3)
 
     z4 = (a3 @ params["weights"]["fc4"]) + params["bias"]["b4"]
-    a4 = softmax(z4)
+    a4 = sigmoid(z4)
 
-    return z1, a1, z2, a2, z3, a3, z4, a4
+    z5 = (a4 @ params["weights"]["fc5"]) + params["bias"]["b5"]
+    a5 = softmax(z5)
 
-def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
+    return z1, a1, z2, a2, z3, a3, z4, a4, z5, a5
+
+def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X, Y, params, lr) :
     m = Y.shape[0] 
 
-    output_delta = a4 - Y
+    output_delta = a5 - Y
 
-    he_3 = output_delta @ params["weights"]["fc4"].T
+    he_4 = output_delta @ params["weights"]["fc5"].T
+    hd_4 = he_4 * sigmoid_derivative(z4)
+
+    he_3 = hd_4 @ params["weights"]["fc4"].T
     hd_3 = he_3 * sigmoid_derivative(z3)
 
     he_2 = hd_3 @ params["weights"]["fc3"].T
@@ -83,8 +91,11 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
     he_1 = hd_2 @ params["weights"]["fc2"].T
     hd_1 = he_1 * sigmoid_derivative(z1)
 
-    params["weights"]["fc4"] -= lr * ((a3.T @ output_delta) / m)
-    params["bias"]["b4"] -= lr * np.mean(output_delta, axis=0) 
+    params["weights"]["fc5"] -= lr * ((a4.T @ output_delta) / m)
+    params["bias"]["b5"] -= lr * np.mean(output_delta, axis=0)
+
+    params["weights"]["fc4"] -= lr * ((a3.T @ hd_4) / m)
+    params["bias"]["b4"] -= lr * np.mean(hd_4, axis=0) 
 
     params["weights"]["fc3"] -= lr * ((a2.T @ hd_3) / m)
     params["bias"]["b3"] -= lr * np.mean(hd_3, axis=0) 
@@ -125,18 +136,18 @@ def train(epochs, train_loader, valid_loader, lr, path) :
         epoch_loss = 0.
         for X_train, Y_train in train_loader :
             Y_train = one_hot(Y_train)
-            z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_train, params)
-            params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X_train, Y_train, params, lr)
-            epoch_loss += cross_entropy_loss(Y_train, a4)
+            z1, a1, z2, a2, z3, a3, z4, a4, z5, a5 = forward_prop(X_train, params)
+            params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X_train, Y_train, params, lr)
+            epoch_loss += cross_entropy_loss(Y_train, a5)
         
-        # print(f'epoch : {i} loss : {epoch_loss}')
+        print(f'epoch : {i} loss : {epoch_loss}')
         save_weights(params, path, i+1)
 
     valid_loss = 0.
     for X_val, Y_val in valid_loader :
-        z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_val, params)
-        valid_loss = cross_entropy_loss(Y_val, a4)
-    # print(f'validation : {valid_loss}')
+        z1, a1, z2, a2, z3, a3, z4, a4, z5, a5 = forward_prop(X_val, params)
+        valid_loss = cross_entropy_loss(Y_val, a5)
+    print(f'validation : {valid_loss}')
     
     return params
 
