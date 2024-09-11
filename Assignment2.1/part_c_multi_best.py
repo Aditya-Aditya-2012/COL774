@@ -3,6 +3,8 @@ import numpy as np
 import pickle
 import argparse
 from preprocessor import *
+import time
+
 np.random.seed(0)
 
 def load_pickle(file_path):
@@ -172,7 +174,7 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X, Y, params, lr, optimize
     elif optimizer == "adam":
         beta1 = 0.6  # Decay factor for the first moment
         beta2 = 0.95 # Decay factor for the second moment
-        epsilon = 1e-10
+        epsilon = 1e-8
 
         # Update momentums and rms_cache for each layer
         momentums["fc5"] = beta1 * momentums["fc5"] + (1 - beta1) * d_w5
@@ -268,6 +270,19 @@ def train(epochs, train_loader, valid_loader, lr, path, optimizer):
         valid_loss = cross_entropy_loss(Y_val, a5)
     print(f'validation loss: {valid_loss}')
 
+    # Save predictions on the training set
+    all_predictions = []
+    for X_train, _ in train_loader:
+        _, _, _, _, _, _, _, _, _, a5 = forward_prop(X_train, params)
+        predictions = np.argmax(a5, axis=1)  # Assuming your output is one-hot encoded
+        all_predictions.extend(predictions)
+    
+    all_predictions = np.array(all_predictions)
+    
+    # Save predictions to a .pkl file
+    with open('predictions.pkl', 'wb') as f:
+        pickle.dump(all_predictions, f)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
     parser.add_argument('--dataset_root', type=str, required=True, help='Root directory of the dataset.')
@@ -276,6 +291,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train_loader, valid_loader = load_data(args.dataset_root)
-    params = train(epochs = 1, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path, optimizer="adam")
-
+    start_time = time.time()
+    
+    params = train(epochs = 15, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path, optimizer="adam")
+    
+    end_time = time.time()
+    running_time = end_time - start_time
+    print(f'Training completed in {running_time:.2f} seconds')
     
