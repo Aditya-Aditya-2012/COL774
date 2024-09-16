@@ -67,7 +67,7 @@ def initialize_weights(n_features, n_classes, method='zeros', mean=0.0, std=0.01
         raise ValueError(f"Unknown initialization method: {method}")
     return W
 
-def hyperparameter_tuning(X_train, Y_train, X_test, y_freq):
+def hyperparameter_tuning(X_train, Y_train, X_test, y_freq, output_path):
     batch_size = 16
     lr = 5
     strategy = 2  
@@ -94,7 +94,7 @@ def hyperparameter_tuning(X_train, Y_train, X_test, y_freq):
 
     predictions = predict(X_test, W)
     
-    with open('output.txt', 'w') as f:
+    with open(output_path, 'w') as f:
         for pred in predictions:
             f.write(f"{pred}\n")
     
@@ -114,7 +114,7 @@ def main():
     num_classes = len(np.unique(y_train))
     Y_train = np.eye(num_classes)[y_train]
 
-    W = hyperparameter_tuning(X_train, Y_train, X_test, y_freq)
+    W = hyperparameter_tuning(X_train, Y_train, X_test, y_freq, output_path)
     
     end_time = time.time()
     elapsed_time = end_time - start_time

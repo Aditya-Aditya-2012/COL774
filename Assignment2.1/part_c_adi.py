@@ -91,22 +91,70 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X, Y, params, lr) :
     he_1 = hd_2 @ params["weights"]["fc2"].T
     hd_1 = he_1 * sigmoid_derivative(z1)
 
-    params["weights"]["fc5"] -= lr * ((a4.T @ output_delta) / m)
-    params["bias"]["b5"] -= lr * np.mean(output_delta, axis=0)
+    dw5 = (a4.T @ output_delta) / m
+    db5 = np.mean(output_delta, axis=0)
 
-    params["weights"]["fc4"] -= lr * ((a3.T @ hd_4) / m)
-    params["bias"]["b4"] -= lr * np.mean(hd_4, axis=0) 
+    dw4 = (a3.T @ hd_4) / m
+    db4 = np.mean(hd_4, axis=0) 
 
-    params["weights"]["fc3"] -= lr * ((a2.T @ hd_3) / m)
-    params["bias"]["b3"] -= lr * np.mean(hd_3, axis=0) 
+    dw3 = (a2.T @ hd_3) / m
+    db3 = np.mean(hd_3, axis=0)
 
-    params["weights"]["fc2"] -= lr * ((a1.T @ hd_2) / m)
-    params["bias"]["b2"] -= lr * np.mean(hd_2, axis=0) 
+    dw2 = (a1.T @ hd_2) / m
+    db2 = np.mean(hd_2, axis=0)
 
-    params["weights"]["fc1"] -= lr * ((X.T @ hd_1) / m)
-    params["bias"]["b1"] -= lr * np.mean(hd_1, axis=0) 
+    dw1 = (X.T @ hd_1) / m
+    db1 = np.mean(hd_1, axis=0)   
 
-    return params
+    grad = {
+        "w1b1" : (dw1, db1),
+        "w2b2" : (dw2, db2),
+        "w3b3" : (dw3, db3),
+        "w4b4" : (dw4, db4),
+        "w5b5" : (dw5, db5)
+    }
+
+    return grad
+
+    # params["weights"]["fc5"] -= lr * ((a4.T @ output_delta) / m)
+    # params["bias"]["b5"] -= lr * np.mean(output_delta, axis=0)
+
+    # params["weights"]["fc4"] -= lr * ((a3.T @ hd_4) / m)
+    # params["bias"]["b4"] -= lr * np.mean(hd_4, axis=0) 
+
+    # params["weights"]["fc3"] -= lr * ((a2.T @ hd_3) / m)
+    # params["bias"]["b3"] -= lr * np.mean(hd_3, axis=0) 
+
+    # params["weights"]["fc2"] -= lr * ((a1.T @ hd_2) / m)
+    # params["bias"]["b2"] -= lr * np.mean(hd_2, axis=0) 
+
+    # params["weights"]["fc1"] -= lr * ((X.T @ hd_1) / m)
+    # params["bias"]["b1"] -= lr * np.mean(hd_1, axis=0) 
+
+    # return params
+
+def adam(beta1 = 0.9, beta2 = 0.999, epsilon = 1e-30, lr, t, w, b, m_dw, m_db, dw, db) :
+    m_dw = beta1*m_dw + (1-beta1)*dw
+    m_db = beta1*m_db + (1-beta1)*db
+
+    v_dw = beta2*v_dw + (1-beta2)*(dw**2)
+    v_db = beta2*v_db + (1-beta2)*(db)
+
+    m_dw_corr = m_dw/(1-beta1**t)
+    m_db_corr = m_db/(1-beta1**t)
+
+    v_dw_corr = v_dw/(1-beta2**t)
+    v_db_corr = v_db/(1-beta2**t)
+
+    w = w - lr*(m_dw_corr/(np.sqrt(v_dw_corr)+epsilon))
+    b = b - lr*(m_db_corr/(np.sqrt(v_db_corr)+epsilon))
+
+    return w, b, m_dw, m_db
+
+def rmsprop() :
+    return 0
+
+def update(params, grad, update_fn)
 
 def cross_entropy_loss(y_true, y_pred):
     y_pred = np.clip(y_pred, 1e-12, 1.0)
