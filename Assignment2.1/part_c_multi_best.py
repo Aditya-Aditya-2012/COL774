@@ -51,12 +51,16 @@ def init_optimizers(params):
     velocities = {}
     momentums = {}
     rms_cache = {}
-
     # Initialize velocities, momentums, and rms_cache for each fully connected (fc) layer
     for layer in params["weights"]:
         velocities[layer] = np.zeros_like(params["weights"][layer])  # Momentum storage
         momentums[layer] = np.zeros_like(params["weights"][layer])   # Adam first moment
         rms_cache[layer] = np.zeros_like(params["weights"][layer])   # RMSProp/Adam second moment
+
+    for layer in params["bias"]:
+        velocities[layer] = np.zeros_like(params["bias"][layer])  # Momentum storage
+        momentums[layer] = np.zeros_like(params["bias"][layer])   # Adam first moment
+        rms_cache[layer] = np.zeros_like(params["bias"][layer])   # RMSProp/Adam second moment
 
     return velocities, momentums, rms_cache
 
@@ -173,7 +177,7 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X, Y, params, lr, optimize
 
     elif optimizer == "adam":
         beta1 = 0.6  # Decay factor for the first moment
-        beta2 = 0.95 # Decay factor for the second moment
+        beta2 = 0.85 # Decay factor for the second moment
         epsilon = 1e-8
 
         # Update momentums and rms_cache for each layer
@@ -182,35 +186,65 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X, Y, params, lr, optimize
         m_hat_5 = momentums["fc5"] / (1 - beta1 ** t)
         v_hat_5 = rms_cache["fc5"] / (1 - beta2 ** t)
         params["weights"]["fc5"] -= lr * m_hat_5 / (np.sqrt(v_hat_5) + epsilon)
-        params["bias"]["b5"] -= lr * d_b5
+
+        momentums["b5"] = beta1 * momentums["b5"] + (1 - beta1) * d_b5
+        rms_cache["b5"] = beta2 * rms_cache["b5"] + (1 - beta2) * d_b5 ** 2
+        mb_hat_5 = momentums["b5"] / (1 - beta1 ** t)
+        vb_hat_5 = rms_cache["b5"] / (1 - beta2 ** t)
+        params["bias"]["b5"] -= lr * mb_hat_5 / (np.sqrt(vb_hat_5) + epsilon)
 
         momentums["fc4"] = beta1 * momentums["fc4"] + (1 - beta1) * d_w4
         rms_cache["fc4"] = beta2 * rms_cache["fc4"] + (1 - beta2) * d_w4 ** 2
         m_hat_4 = momentums["fc4"] / (1 - beta1 ** t)
         v_hat_4 = rms_cache["fc4"] / (1 - beta2 ** t)
         params["weights"]["fc4"] -= lr * m_hat_4 / (np.sqrt(v_hat_4) + epsilon)
-        params["bias"]["b4"] -= lr * d_b4 
+
+        momentums["b4"] = beta1 * momentums["b4"] + (1 - beta1) * d_b4
+        rms_cache["b4"] = beta2 * rms_cache["b4"] + (1 - beta2) * d_b4 ** 2
+        mb_hat_4 = momentums["b4"] / (1 - beta1 ** t)
+        vb_hat_4 = rms_cache["b4"] / (1 - beta2 ** t)
+        params["bias"]["b4"] -= lr * mb_hat_4 / (np.sqrt(vb_hat_4) + epsilon)
+
+        # params["bias"]["b4"] -= lr * d_b4 
 
         momentums["fc3"] = beta1 * momentums["fc3"] + (1 - beta1) * d_w3
         rms_cache["fc3"] = beta2 * rms_cache["fc3"] + (1 - beta2) * d_w3 ** 2
         m_hat_3 = momentums["fc3"] / (1 - beta1 ** t)
         v_hat_3 = rms_cache["fc3"] / (1 - beta2 ** t)
         params["weights"]["fc3"] -= lr * m_hat_3 / (np.sqrt(v_hat_3) + epsilon)
-        params["bias"]["b3"] -= lr * d_b3 
+        
+        momentums["b3"] = beta1 * momentums["b3"] + (1 - beta1) * d_b3
+        rms_cache["b3"] = beta2 * rms_cache["b3"] + (1 - beta2) * d_b3 ** 2
+        mb_hat_3 = momentums["b3"] / (1 - beta1 ** t)
+        vb_hat_3 = rms_cache["b3"] / (1 - beta2 ** t)
+        params["bias"]["b3"] -= lr * mb_hat_3 / (np.sqrt(vb_hat_3) + epsilon)
+
 
         momentums["fc2"] = beta1 * momentums["fc2"] + (1 - beta1) * d_w2
         rms_cache["fc2"] = beta2 * rms_cache["fc2"] + (1 - beta2) * d_w2 ** 2
         m_hat_2 = momentums["fc2"] / (1 - beta1 ** t)
         v_hat_2 = rms_cache["fc2"] / (1 - beta2 ** t)
         params["weights"]["fc2"] -= lr * m_hat_2 / (np.sqrt(v_hat_2) + epsilon)
-        params["bias"]["b2"] -= lr * d_b2 
+        
+        momentums["b2"] = beta1 * momentums["b2"] + (1 - beta1) * d_b2
+        rms_cache["b2"] = beta2 * rms_cache["b2"] + (1 - beta2) * d_b2 ** 2
+        mb_hat_2 = momentums["b2"] / (1 - beta1 ** t)
+        vb_hat_2 = rms_cache["b2"] / (1 - beta2 ** t)
+        params["bias"]["b2"] -= lr * mb_hat_2 / (np.sqrt(vb_hat_2) + epsilon)
+
 
         momentums["fc1"] = beta1 * momentums["fc1"] + (1 - beta1) * d_w1
         rms_cache["fc1"] = beta2 * rms_cache["fc1"] + (1 - beta2) * d_w1 ** 2
         m_hat_1 = momentums["fc1"] / (1 - beta1 ** t)
         v_hat_1 = rms_cache["fc1"] / (1 - beta2 ** t)
         params["weights"]["fc1"] -= lr * m_hat_1 / (np.sqrt(v_hat_1) + epsilon)
-        params["bias"]["b1"] -= lr * d_b1 
+        
+        momentums["b1"] = beta1 * momentums["b1"] + (1 - beta1) * d_b1
+        rms_cache["b1"] = beta2 * rms_cache["b1"] + (1 - beta2) * d_b1 ** 2
+        mb_hat_1 = momentums["b1"] / (1 - beta1 ** t)
+        vb_hat_1 = rms_cache["b1"] / (1 - beta2 ** t)
+        params["bias"]["b1"] -= lr * mb_hat_1 / (np.sqrt(vb_hat_1) + epsilon)
+
 
     elif optimizer == "gd":
         # Standard Gradient Descent
@@ -236,7 +270,7 @@ def cross_entropy_loss(y_true, y_pred):
     y_pred = np.clip(y_pred, 1e-12, 1.0)
     
     n_samples = y_true.shape[0]
-    cross_entropy = -np.sum(y_true * np.log(y_pred)) / n_samples
+    cross_entropy = -np.sum(y_true * np.log(y_pred))
     return cross_entropy
 
 def save_weights(params, path, i):
@@ -244,31 +278,43 @@ def save_weights(params, path, i):
         pickle.dump(params, f)
 
 def one_hot(Y) :
-    n_classes = np.max(Y) + 1  
+    n_classes = 8  
     Y_one_hot = np.eye(n_classes)[Y]
     return Y_one_hot
 
-def train(epochs, train_loader, valid_loader, lr, path, optimizer):
+def train(epochs, train_loader, valid_loader, lr, path, optimizer, max_time_minutes):
     params = init_params()
     velocities, momentums, rms_cache = init_optimizers(params)
-    save_weights(params, path, 0)
+    # save_weights(params, path, 0)
+    max_time_seconds = max_time_minutes * 60
+    start_time = time.time()
+    best_train_loss = float('inf')
 
     for i in range(epochs):
         epoch_loss = 0.
+        num_samples = 0
+
         for X_train, Y_train in train_loader:
             Y_train = one_hot(Y_train)
             z1, a1, z2, a2, z3, a3, z4, a4, z5, a5 = forward_prop(X_train, params)
             params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, z5, a5, X_train, Y_train, params, lr, optimizer, velocities, momentums, rms_cache, t=i+1)
             epoch_loss += cross_entropy_loss(Y_train, a5)
+            num_samples += Y_train.shape[0]
         
-        print(f'epoch: {i} loss: {epoch_loss}')
+        train_loss = epoch_loss / num_samples
+        print(f'epoch: {i} train loss: {train_loss:.4f} samples : {num_samples}')
         # save_weights(params, path, i+1)
 
-    valid_loss = 0.
-    for X_val, Y_val in valid_loader:
-        z1, a1, z2, a2, z3, a3, z4, a4, z5, a5 = forward_prop(X_val, params)
-        valid_loss = cross_entropy_loss(Y_val, a5)
-    print(f'validation loss: {valid_loss}')
+        # if val_loss >= 1.1*best_val_loss :
+        #     print(f'early stopping triggered at eopch {i+1}')
+        #     break
+        # else:
+        #     best_val_loss = val_loss
+
+        elapsed_time = time.time() - start_time
+        if elapsed_time >= max_time_seconds :
+            print(f'Training stopped after {i+1} epochs due to time limit')
+            break
 
     # Save predictions on the training set
     all_predictions = []
@@ -279,9 +325,11 @@ def train(epochs, train_loader, valid_loader, lr, path, optimizer):
     
     all_predictions = np.array(all_predictions)
     
-    # Save predictions to a .pkl file
-    with open('predictions.pkl', 'wb') as f:
-        pickle.dump(all_predictions, f)
+    if(train_loss < best_train_loss) :
+        with open('predictions.pkl', 'wb') as f:
+            pickle.dump(all_predictions, f)
+        
+        best_train_loss = train_loss
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
@@ -293,7 +341,7 @@ if __name__ == '__main__':
     train_loader, valid_loader = load_data(args.dataset_root)
     start_time = time.time()
     
-    params = train(epochs = 15, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path, optimizer="adam")
+    params = train(epochs = 1000, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path, optimizer="adam", max_time_minutes = 14.5)
     
     end_time = time.time()
     running_time = end_time - start_time

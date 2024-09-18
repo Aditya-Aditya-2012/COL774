@@ -99,9 +99,8 @@ def back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X, Y, params, lr) :
 
 def cross_entropy_loss(y_true, y_pred):
     y_pred = np.clip(y_pred, 1e-12, 1.0)
-    
     n_samples = y_true.shape[0]
-    cross_entropy = -np.sum(y_true * np.log(y_pred)) / n_samples
+    cross_entropy = -np.sum(y_true * np.log(y_pred))
     return cross_entropy
 
 # def compute_loss(y_true, y_pred):
@@ -123,20 +122,22 @@ def train(epochs, train_loader, valid_loader, lr, path) :
     save_weights(params, path, 0)
     for i in range(epochs) :
         epoch_loss = 0.
+        num_samples = 0
         for X_train, Y_train in train_loader :
             Y_train = one_hot(Y_train)
             z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_train, params)
             params = back_prop(z1, a1, z2, a2, z3, a3, z4, a4, X_train, Y_train, params, lr)
             epoch_loss += cross_entropy_loss(Y_train, a4)
+            num_batches +=Y_train.shape[0]
         
-        # print(f'epoch : {i} loss : {epoch_loss}')
+        print(f'epoch : {i} loss : {epoch_loss/num_samples}')
         save_weights(params, path, i+1)
 
-    valid_loss = 0.
-    for X_val, Y_val in valid_loader :
-        z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_val, params)
-        valid_loss = cross_entropy_loss(Y_val, a4)
-    # print(f'validation : {valid_loss}')
+    # valid_loss = 0.
+    # for X_val, Y_val in valid_loader :
+    #     z1, a1, z2, a2, z3, a3, z4, a4 = forward_prop(X_val, params)
+    #     valid_loss = cross_entropy_loss(Y_val, a4)
+    # # print(f'validation : {valid_loss}')
     
     return params
 
