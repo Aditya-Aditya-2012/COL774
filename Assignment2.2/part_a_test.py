@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import pickle
 import numpy as np
-from testloader import CustomImageDataset, transform  # Import CustomImageDataset and transform from your testloader.py
+from testloader import CustomImageDataset, transform  
 from torch.utils.data import DataLoader
 
 torch.manual_seed(0)
@@ -21,7 +21,7 @@ class CNNBinaryClassifier(nn.Module):
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.fc1 = nn.Linear(64 * 12 * 25, 1)  # Adjust based on your input size
+        self.fc1 = nn.Linear(64 * 12 * 25, 1)  
 
     def forward(self, x):
         x = self.pool1(self.relu1(self.conv1(x)))
@@ -39,7 +39,7 @@ def test_model(test_loader, load_weights_path, save_predictions_path):
     predictions = []
     
     with torch.no_grad():
-        for inputs in test_loader:  # Only one value expected in the batch
+        for inputs in test_loader:  
             inputs = inputs.float()
             outputs = model(inputs)
             preds = torch.sigmoid(outputs).squeeze().numpy()
