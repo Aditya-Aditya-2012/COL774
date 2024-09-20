@@ -3,7 +3,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from trainloader import CustomImageDataset, transform  # Import CustomImageDataset and transform from your trainloader.py
+from trainloader import CustomImageDataset, transform  
 from torch.utils.data import DataLoader
 
 torch.manual_seed(0)
@@ -20,7 +20,7 @@ class CNNBinaryClassifier(nn.Module):
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2)
 
-        self.fc1 = nn.Linear(64 * 12 * 25, 1)  # Adjust based on your input size
+        self.fc1 = nn.Linear(64 * 12 * 25, 1)  
 
     def forward(self, x):
         x = self.pool1(self.relu1(self.conv1(x)))
