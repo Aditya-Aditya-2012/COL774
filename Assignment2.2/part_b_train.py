@@ -3,7 +3,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from trainloader import CustomImageDataset, transform  # Import CustomImageDataset and transform from your trainloader.py
+from trainloader import CustomImageDataset, transform  
 from torch.utils.data import DataLoader
 
 torch.manual_seed(0)
@@ -24,7 +24,7 @@ class CNNMultiClassClassifier(nn.Module):
         self.relu3 = nn.ReLU()
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=1, padding=0)
 
-        self.fc1 = nn.Linear(128 * 11 * 24, 512)  # Adjust based on your input size
+        self.fc1 = nn.Linear(128 * 11 * 24, 512) 
         self.relu4 = nn.ReLU()
         self.fc2 = nn.Linear(512, 8)  # Output layer for 8 classes
 
