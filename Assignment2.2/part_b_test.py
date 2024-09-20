@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import pickle
 import numpy as np
-from testloader import CustomImageDataset, transform  # Import CustomImageDataset and transform from your testloader.py
+from testloader import CustomImageDataset, transform  
 from torch.utils.data import DataLoader
 
 torch.manual_seed(0)
@@ -25,7 +25,7 @@ class CNNMultiClassClassifier(nn.Module):
         self.relu3 = nn.ReLU()
         self.pool3 = nn.MaxPool2d(kernel_size=2, stride=1, padding=0)
 
-        self.fc1 = nn.Linear(128 * 11 * 24, 512)  # Adjust based on your input size
+        self.fc1 = nn.Linear(128 * 11 * 24, 512) 
         self.relu4 = nn.ReLU()
         self.fc2 = nn.Linear(512, 8)  # Output layer for 8 classes
 
