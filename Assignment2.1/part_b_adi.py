@@ -52,7 +52,8 @@ def sigmoid(z) :
     return 1 / (1 + np.exp(-z))
 
 def sigmoid_derivative(z):
-    return 1 / (2 + np.exp(-z) + 1/np.exp(-z))
+    sig = sigmoid(z)
+    return sig * (1 - sig)
 
 def forward_prop(X, params) :
     z1 = (X @ params["weights"]["fc1"]) + params["bias"]["b1"]    
