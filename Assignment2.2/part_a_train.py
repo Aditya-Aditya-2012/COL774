@@ -74,12 +74,3 @@ if __name__ == "__main__":
     train_model(train_loader, args.save_weights_path)
 
 
-# Epoch 1/8, Loss: 0.7932, Test Accuracy: 50.00%
-# Epoch 2/8, Loss: 0.6900, Test Accuracy: 50.00%
-# Epoch 3/8, Loss: 0.6763, Test Accuracy: 72.00%
-# Epoch 4/8, Loss: 0.6385, Test Accuracy: 79.50%
-# Epoch 5/8, Loss: 0.5711, Test Accuracy: 79.00%
-# Epoch 6/8, Loss: 0.4872, Test Accuracy: 77.50%
-# Epoch 7/8, Loss: 0.4220, Test Accuracy: 79.00%
-# Epoch 8/8, Loss: 0.3831, Test Accuracy: 80.00%
-
