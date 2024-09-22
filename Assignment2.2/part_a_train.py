@@ -68,7 +68,7 @@ if __name__ == "__main__":
     dataset = CustomImageDataset(root_dir=args.train_dataset_root, csv=os.path.join(args.train_dataset_root, "public_train.csv"), transform=transform)
 
     # Create DataLoader
-    train_loader = DataLoader(dataset, batch_size=128, shuffle=True)
+    train_loader = DataLoader(dataset, batch_size=128, shuffle=False)
 
     # Call the training function
     train_model(train_loader, args.save_weights_path)
