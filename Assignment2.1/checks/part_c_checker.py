@@ -31,11 +31,11 @@ if __name__ == "__main__":
     
     #Save the predictions from your on "train set" as a predictions.pkl [Refer Assignment pdf for more details] file where it contains a numpy array of size equal to the number of training samples. 
     #Load the predictions array from the pickle file
-    pickle_file = '../predictions.pkl' 
+    pickle_file = '../result_d/predictions.pkl' 
     your_predictions = load_predictions(pickle_file)
     
     #Load the ground truth labels from the CSV file
-    csv_file = '../dataA2/multi_dataset/train.csv'  
+    csv_file = '../dataA2/multi_dataset/val.csv'  
     ground_truth = load_ground_truth(csv_file)
     
     #Assume the number of classes (num_classes) is known
