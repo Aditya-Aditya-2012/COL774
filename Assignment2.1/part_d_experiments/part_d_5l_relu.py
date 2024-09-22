@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import argparse
 from preprocessor import CustomImageDataset, DataLoader, numpy_transform  
-from scipy.special import erf
 import time
 
 np.random.seed(0)
@@ -42,14 +41,14 @@ class NeuralNetwork:
             "fc1": np.random.randn(625, 512) * np.sqrt(2/(625)),
             "fc2": np.random.randn(512, 256) * np.sqrt(2/(512)),
             "fc3": np.random.randn(256, 128) * np.sqrt(2/(256)),
-            "fc4": np.random.randn(128, 64) * np.sqrt(2/(128)),
-            "fc5": np.random.randn(64, 8) * np.sqrt(2/(64))
+            "fc4": np.random.randn(128, 32) * np.sqrt(2/(128)),
+            "fc5": np.random.randn(32, 8) * np.sqrt(2/(32))
         }
         self.biases = {
             "b1": np.zeros((512,), dtype=np.float64),
             "b2": np.zeros((256,), dtype=np.float64),
             "b3": np.zeros((128,), dtype=np.float64),
-            "b4": np.zeros((64,), dtype=np.float64),
+            "b4": np.zeros((32,), dtype=np.float64),
             "b5": np.zeros((8,), dtype=np.float64)
         }
         self.weights = {k: v.astype(np.float64) for k, v in self.weights.items()}
@@ -91,32 +90,18 @@ class NeuralNetwork:
     def sigmoid_derivative(self, z):
         return z * (1 - z)
 
-    def swish(self, x):
-        return x * self.sigmoid(x)
-
-    def swish_derivative(self, x):
-        sig_x = self.sigmoid(x)
-        return sig_x + x * sig_x * (1 - sig_x)
-    
-    def gelu(self, x):
-        return 0.5 * x * (1 + erf(x / np.sqrt(2)))
-
-    def gelu_derivative(self, x):
-        return 0.5 * (1 + erf(x / np.sqrt(2))) + (x * np.exp(-x**2 / 2)) / np.sqrt(2 * np.pi)
-
-
     def forward(self, X):
         self.z1 = np.dot(X, self.weights["fc1"]) + self.biases["b1"]
-        self.a1 = self.gelu(self.z1)
+        self.a1 = self.relu(self.z1)
 
         self.z2 = np.dot(self.a1, self.weights["fc2"]) + self.biases["b2"]
-        self.a2 = self.gelu(self.z2)
+        self.a2 = self.relu(self.z2)
 
         self.z3 = np.dot(self.a2, self.weights["fc3"]) + self.biases["b3"]
-        self.a3 = self.gelu(self.z3)
+        self.a3 = self.relu(self.z3)
 
         self.z4 = np.dot(self.a3, self.weights["fc4"]) + self.biases["b4"]
-        self.a4 = self.gelu(self.z4)
+        self.a4 = self.relu(self.z4)
 
         self.z5 = np.dot(self.a4, self.weights["fc5"]) + self.biases["b5"]
         self.a5 = self.softmax(self.z5)
@@ -132,25 +117,25 @@ class NeuralNetwork:
         db_5 = np.mean(output_delta, axis = 0)
         
         he_4 = output_delta @ self.weights["fc5"].T
-        hd_4 = he_4 * self.gelu_derivative(self.z4)
+        hd_4 = he_4 * self.relu_derivative(self.a4)
 
         dw_4 = (self.a3.T @ hd_4) / m
         db_4 = np.mean(hd_4, axis = 0)
         
         he_3 = hd_4 @ self.weights["fc4"].T
-        hd_3 = he_3 * self.gelu_derivative(self.z3)
+        hd_3 = he_3 * self.relu_derivative(self.a3)
 
         dw_3 = (self.a2.T @ hd_3) / m
         db_3 = np.mean(hd_3, axis = 0)
         
         he_2 = hd_3 @ self.weights["fc3"].T
-        hd_2 = he_2 * self.gelu_derivative(self.z2)
+        hd_2 = he_2 * self.relu_derivative(self.a2)
 
         dw_2 = (self.a1.T @ hd_2) / m
         db_2 = np.mean(hd_2, axis = 0)
         
         he_1 = hd_2 @ self.weights["fc2"].T
-        hd_1 = he_1 * self.gelu_derivative(self.z1)
+        hd_1 = he_1 * self.relu_derivative(self.a1)
 
         dw_1 = (X.T @ hd_1) / m
         db_1 = np.mean(hd_1, axis = 0)
@@ -342,7 +327,7 @@ class NeuralNetwork:
                 loss = self.compute_loss(Y_batch, Y_pred)
                 epoch_loss += loss
                 num_samples += Y_batch.shape[0]
-                self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
+                self.backward(X_batch, Y_batch, Y_pred, t=epoch+1)
 
             elapsed_time = time.time() - start_time
         
@@ -351,7 +336,7 @@ class NeuralNetwork:
                 self.learning_rate /= (1 + k * (epoch+1))
 
             out_val = self.forward(X_val)
-            loss_val = self.compute_loss(one_hot(Y_val), out_val) / Y_val.shape[0] 
+            loss_val = self.compute_loss(Y_val, out_val) / Y_val.shape[0] 
 
             if (loss_val) < best_loss:
                 best_loss = loss_val

@@ -288,11 +288,16 @@ class NeuralNetwork:
 
 
     def compute_loss(self, y_true, y_pred):
-
         y_pred = np.clip(y_pred, 1e-12, 1.0)
         n_samples = y_true.shape[0]
         cross_entropy = -np.sum(y_true * np.log(y_pred)) 
         return cross_entropy
+
+    def save_weights(self):
+        weights_dict = {'weights': self.weights, 'bias': self.biases}
+        with open(, 'wb') as f:
+            pickle.dump(weights_dict, f)
+
 
     def train(self, X_train, Y_train, epochs=15, batch_size=256, optimizer='gd', adaptive = False):
         best_loss = float('inf')
@@ -334,15 +339,10 @@ class NeuralNetwork:
         self.save_weights()
         print(f'best training loss : {best_loss}')
 
-    def save_weights(self):
-        weights_dict = {'weights': self.weights, 'bias': self.biases}
-        with open('weights_c.pkl', 'wb') as f:
-            pickle.dump(weights_dict, f)
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
     parser.add_argument('--dataset_root', type=str, required=True, help='Root directory of the dataset.')
-    parser.add_argument('--save', type=str, required=True, help='Path to save the weights.')
+    parser.add_argument('--save_weights_path', type=str, required=True, help='Path to save the weights.')
 
     args = parser.parse_args()
 

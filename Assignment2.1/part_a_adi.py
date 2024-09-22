@@ -131,7 +131,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     train_loader, valid_loader = load_data(args.dataset_root)
-    params = train(epochs = 5, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path)
+    params = train(epochs = 15, train_loader=train_loader, valid_loader=valid_loader, lr = 0.001, path=args.save_weights_path)
 
     
 

@@ -17,8 +17,7 @@ def show_diff(yourfile, gtfile):
         your_wt1 = your_wts["weights"][layer_key]
         gt_wt1 = gt_wts["weights"][layer_key]
 
-        new_dict = {key.replace("b", "fc"): value for key, value in your_wts["bias"].items()}
-        b1 = new_dict[layer_key]
+        b1 = your_wts["bias"][layer_key]
         b2 = gt_wts["bias"][layer_key]
 
         assert(your_wt1.shape == gt_wt1.shape)
@@ -36,6 +35,6 @@ def show_diff(yourfile, gtfile):
         print('max relative bias diff:', 100 * np.max(diff_bias), '%')
 
 if __name__ == '__main__':
-    your_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/results_multi/weights_5.pkl"  #Add path to your weights.pkl here for a particular epoch.
-    GT_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/checks/Multi_NN_1_wts_biases/ep_5.pkl" #Add path to the given weights.pkl here for a particular epoch to be used for comparison.
+    your_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/result_a/weights.pkl"  #Add path to your weights.pkl here for a particular epoch.
+    GT_weights_file = "/home/civil/btech/ce1210494/COL774/Assignment2.1/checks/Binary_NN_1_wts_biases/ep_5.pkl" #Add path to the given weights.pkl here for a particular epoch to be used for comparison.
     show_diff(your_weights_file, GT_weights_file)

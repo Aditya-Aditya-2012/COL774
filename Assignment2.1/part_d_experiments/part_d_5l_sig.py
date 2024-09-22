@@ -3,7 +3,6 @@ import numpy as np
 import pickle
 import argparse
 from preprocessor import CustomImageDataset, DataLoader, numpy_transform  
-from scipy.special import erf
 import time
 
 np.random.seed(0)
@@ -91,32 +90,18 @@ class NeuralNetwork:
     def sigmoid_derivative(self, z):
         return z * (1 - z)
 
-    def swish(self, x):
-        return x * self.sigmoid(x)
-
-    def swish_derivative(self, x):
-        sig_x = self.sigmoid(x)
-        return sig_x + x * sig_x * (1 - sig_x)
-    
-    def gelu(self, x):
-        return 0.5 * x * (1 + erf(x / np.sqrt(2)))
-
-    def gelu_derivative(self, x):
-        return 0.5 * (1 + erf(x / np.sqrt(2))) + (x * np.exp(-x**2 / 2)) / np.sqrt(2 * np.pi)
-
-
     def forward(self, X):
         self.z1 = np.dot(X, self.weights["fc1"]) + self.biases["b1"]
-        self.a1 = self.gelu(self.z1)
+        self.a1 = self.sigmoid(self.z1)
 
         self.z2 = np.dot(self.a1, self.weights["fc2"]) + self.biases["b2"]
-        self.a2 = self.gelu(self.z2)
+        self.a2 = self.sigmoid(self.z2)
 
         self.z3 = np.dot(self.a2, self.weights["fc3"]) + self.biases["b3"]
-        self.a3 = self.gelu(self.z3)
+        self.a3 = self.sigmoid(self.z3)
 
         self.z4 = np.dot(self.a3, self.weights["fc4"]) + self.biases["b4"]
-        self.a4 = self.gelu(self.z4)
+        self.a4 = self.sigmoid(self.z4)
 
         self.z5 = np.dot(self.a4, self.weights["fc5"]) + self.biases["b5"]
         self.a5 = self.softmax(self.z5)
@@ -132,25 +117,25 @@ class NeuralNetwork:
         db_5 = np.mean(output_delta, axis = 0)
         
         he_4 = output_delta @ self.weights["fc5"].T
-        hd_4 = he_4 * self.gelu_derivative(self.z4)
+        hd_4 = he_4 * self.sigmoid_derivative(self.a4)
 
         dw_4 = (self.a3.T @ hd_4) / m
         db_4 = np.mean(hd_4, axis = 0)
         
         he_3 = hd_4 @ self.weights["fc4"].T
-        hd_3 = he_3 * self.gelu_derivative(self.z3)
+        hd_3 = he_3 * self.sigmoid_derivative(self.a3)
 
         dw_3 = (self.a2.T @ hd_3) / m
         db_3 = np.mean(hd_3, axis = 0)
         
         he_2 = hd_3 @ self.weights["fc3"].T
-        hd_2 = he_2 * self.gelu_derivative(self.z2)
+        hd_2 = he_2 * self.sigmoid_derivative(self.a2)
 
         dw_2 = (self.a1.T @ hd_2) / m
         db_2 = np.mean(hd_2, axis = 0)
         
         he_1 = hd_2 @ self.weights["fc2"].T
-        hd_1 = he_1 * self.gelu_derivative(self.z1)
+        hd_1 = he_1 * self.sigmoid_derivative(self.a1)
 
         dw_1 = (X.T @ hd_1) / m
         db_1 = np.mean(hd_1, axis = 0)
