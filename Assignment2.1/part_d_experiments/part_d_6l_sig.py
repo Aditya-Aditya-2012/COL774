@@ -315,7 +315,7 @@ if __name__ == '__main__':
     nn = NeuralNetwork(learning_rate=0.001)
 
     # Train the neural network
-    nn.train(X_train, Y_train, X_val, Y_val, epochs=1000, batch_size=256, optimizer='adam', adaptive=False)
+    nn.train(X_train, Y_train, X_val, Y_val, epochs=500, batch_size=256, optimizer='adam', adaptive=False)
 
     # Save the weights
     # nn.save_weights()

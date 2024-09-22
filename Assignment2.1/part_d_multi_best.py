@@ -2,26 +2,34 @@ import os
 import numpy as np
 import pickle
 import argparse
-from preprocessor import CustomImageDataset, DataLoader, numpy_transform  
+from part_d_trainloader import TrainImageDataset, TrainDataLoader, numpy_transform 
+from part_d_testloader import TestImageDataset, TestDataLoader, numpy_transform 
 from scipy.special import erf
 import time
 
 np.random.seed(0)
 
 # Dataloader
-def load_data(dataset_root):
+def load_train_data(dataset_root):
     train_csv = os.path.join(dataset_root, 'train.csv')
     val_csv = os.path.join(dataset_root, 'val.csv')
 
-    train_dataset = CustomImageDataset(root_dir=dataset_root, csv=train_csv, transform=numpy_transform)
-    val_dataset = CustomImageDataset(root_dir=dataset_root, csv=val_csv, transform=numpy_transform)
+    train_dataset = TrainImageDataset(root_dir=dataset_root, csv=train_csv, transform=numpy_transform)
+    val_dataset = TrainImageDataset(root_dir=dataset_root, csv=val_csv, transform=numpy_transform)
 
-    train_loader = DataLoader(dataset=train_dataset, batch_size=256)
-    val_loader = DataLoader(dataset=val_dataset, batch_size=1)
+    train_loader = TrainDataLoader(dataset=train_dataset, batch_size=256)
+    val_loader = TrainDataLoader(dataset=val_dataset, batch_size=1)
 
     return train_loader, val_loader
 
-def loader_to_numpy(loader):
+def load_test_data(dataset_root):
+    test_csv = os.path.join(dataset_root, "val.csv")
+    test_dataset = TestImageDataset(root_dir=dataset_root, csv=test_csv, transform=numpy_transform)
+    test_loader = TestDataLoader(dataset=test_dataset, batch_size=1)
+
+    return test_loader
+
+def train_loader_to_numpy(loader):
     images_list = []
     labels_list = []
     for images, labels in loader:
@@ -29,6 +37,12 @@ def loader_to_numpy(loader):
         labels_list.append(labels)
     return np.vstack(images_list), np.hstack(labels_list)
     # Convert loaders to numpy arrays
+
+def test_loader_to_numpy(loader):
+    images_list = []
+    for images in loader:
+        images_list.append(images)
+    return np.vstack(images_list) #only gives X_test
 
 def one_hot(Y) :
     n_classes = 8  
@@ -317,7 +331,21 @@ class NeuralNetwork:
         cross_entropy = -np.sum(y_true * np.log(y_pred)) 
         return cross_entropy
 
-    def train(self, X_train, Y_train, X_val, Y_val, epochs=15, batch_size=256, optimizer='gd', adaptive = False):
+    def train(self, X_train, Y_train, X_val, Y_val, X_test, epochs=15, batch_size=256, optimizer='gd', wt_path='results', pr_path='results', time_limiter = 875):
+        wt_directory = wt_path
+        wt_file_name = "weights.pkl"
+        wt_file_path = os.path.join(wt_directory, wt_file_name)
+
+        pr_directory = pr_path
+        pr_file_name = "predictions.pkl"
+        pr_file_path = os.path.join(pr_directory, pr_file_name)
+
+        if not os.path.exists(wt_directory):
+            os.makedirs(wt_directory)
+
+        if not os.path.exists(pr_directory):
+            os.makedirs(pr_directory)
+
         best_loss = float('inf')
         n_batches = Y_train.shape[0] / batch_size
 
@@ -331,56 +359,67 @@ class NeuralNetwork:
             epoch_loss = 0.
             num_samples = 0
             k = 0
-            start_time = time.time()
             for i in range(n_batches) :
                 k+=1
                 start_idx = i * batch_size
                 end_idx = (i + 1) * batch_size
                 X_batch, Y_batch = X_train[start_idx:end_idx], Y_train[start_idx:end_idx]
+
                 Y_batch = one_hot(Y_batch)
                 Y_pred = self.forward(X_batch)
+
                 loss = self.compute_loss(Y_batch, Y_pred)
                 epoch_loss += loss
                 num_samples += Y_batch.shape[0]
+
                 self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
-
-            elapsed_time = time.time() - start_time
         
-            if adaptive :
-                k = 5e-7
-                self.learning_rate /= (1 + k * (epoch+1))
-
             out_val = self.forward(X_val)
-            loss_val = self.compute_loss(one_hot(Y_val), out_val) / Y_val.shape[0] 
+            loss_val = self.compute_loss(one_hot(Y_val), out_val) / Y_val.shape[0]
+
+            out_test = self.forward(X_test)
 
             if (loss_val) < best_loss:
                 best_loss = loss_val
+                self.save_weights(wt_file_path)
+                self.save_predictions(pr_file_path, out_test)
 
-            print(f'Epoch {epoch+1}/{epochs}, Loss: {epoch_loss/num_samples}, val_loss: {loss_val}')
+            elapsed_time = time.time() - start_time
+            if(elapsed_time > time_limiter) :
+                # print(f'training stopped after {elapsed_time} seconds and {epoch+1} epochs, loss : {best_loss}')
+                break
 
-        self.save_weights()
-        print(f'best validation loss : {best_loss}')
-
-    def save_weights(self):
-        weights_dict = {'weights': self.weights, 'bias': self.biases}
-        with open('weights_c.pkl', 'wb') as f:
+    def save_weights(self, file_path):
+        new_dict = {key.replace("b", "fc"): value for key, value in self.biases.items()}
+        weights_dict = {'weights': self.weights, 'bias': new_dict}
+        with open(file_path, 'wb') as f:
             pickle.dump(weights_dict, f)
+    
+    def save_predictions(self, file_path, output):
+        predictions = output.argmax(axis=1)
+        predictions = np.array(predictions)
+        with open(file_path, 'wb') as f:
+            pickle.dump(predictions, f)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
     parser.add_argument('--dataset_root', type=str, required=True, help='Root directory of the dataset.')
-    parser.add_argument('--save', type=str, required=True, help='Path to save the weights.')
+    parser.add_argument('--test_dataset_root', type=str, required=True, help='Root directory of the test dataset.')
+    parser.add_argument('--save_weights_path', type=str, required=True, help='Path to save the weights.')
+    parser.add_argument('--save_predictions_path', type=str, required=True, help='Path to save the predictions.')
 
     args = parser.parse_args()
 
-    # Load data
-    train_loader, val_loader = load_data(args.dataset_root)
+    start_time = time.time()
+    train_loader, val_loader = load_train_data(args.dataset_root)
 
-    X_train, Y_train = loader_to_numpy(train_loader)
-    X_val, Y_val = loader_to_numpy(train_loader)
+    X_train, Y_train = train_loader_to_numpy(train_loader)
+    X_val, Y_val = train_loader_to_numpy(val_loader)
 
-    # Initialize neural network
+    test_loader = load_test_data(args.test_dataset_root)
+    X_test = test_loader_to_numpy(test_loader)
+
     nn = NeuralNetwork(learning_rate=0.001)
 
-    # Train the neural network
-    nn.train(X_train, Y_train, X_val, Y_val, epochs=1000, batch_size=256, optimizer='adam', adaptive=False)
+    nn.train(X_train, Y_train, X_val, Y_val, X_test, epochs=5000, batch_size=256, optimizer='adam', wt_path=args.save_weights_path, pr_path=args.save_predictions_path, time_limiter=850)

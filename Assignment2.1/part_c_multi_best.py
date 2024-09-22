@@ -218,7 +218,7 @@ class NeuralNetwork:
             self.biases["b1"] -= self.learning_rate * db_1 / (np.sqrt(self.rms_cache["b1"]) + epsilon)
 
         elif optimizer == 'adam' :
-            beta1 = 0.9  # Decay factor for the first moment
+            beta1 = 0.95  # Decay factor for the first moment
             beta2 = 0.99 # Decay factor for the second moment
             epsilon = 1e-8
 
@@ -294,7 +294,14 @@ class NeuralNetwork:
         cross_entropy = -np.sum(y_true * np.log(y_pred)) 
         return cross_entropy
 
-    def train(self, X_train, Y_train, epochs=15, batch_size=256, optimizer='gd', adaptive = False):
+    def train(self, X_train, Y_train, epochs=15, batch_size=256, optimizer='gd', path='results', time_limiter = 875):
+        directory = path
+        file_name = "weights.pkl"
+        file_path = os.path.join(directory, file_name)
+
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         best_loss = float('inf')
         n_batches = Y_train.shape[0] / batch_size
 
@@ -308,54 +315,48 @@ class NeuralNetwork:
             epoch_loss = 0.
             num_samples = 0
             k = 0
-            start_time = time.time()
             for i in range(n_batches) :
                 k+=1
                 start_idx = i * batch_size
                 end_idx = (i + 1) * batch_size
                 X_batch, Y_batch = X_train[start_idx:end_idx], Y_train[start_idx:end_idx]
+    
                 Y_batch = one_hot(Y_batch)
                 Y_pred = self.forward(X_batch)
+
                 loss = self.compute_loss(Y_batch, Y_pred)
                 epoch_loss += loss
                 num_samples += Y_batch.shape[0]
-                self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
 
-            elapsed_time = time.time() - start_time
+                self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
         
-            if adaptive :
-                k = 5e-7
-                self.learning_rate /= (1 + k * (epoch+1))
             if epoch_loss/num_samples < best_loss:
                 best_loss = epoch_loss/num_samples
+                self.save_weights(file_path)
 
-            print(f'Epoch {epoch+1}/{epochs}, Loss: {epoch_loss/num_samples}, time taken: {elapsed_time}')
+            elapsed_time = time.time() - start_time
+            if(elapsed_time > time_limiter) :
+                # print(f'training stopped after {elapsed_time} seconds and {epoch+1} epochs, loss : {best_loss}')
+                break
 
-        self.save_weights()
-        print(f'best training loss : {best_loss}')
-
-    def save_weights(self):
-        weights_dict = {'weights': self.weights, 'bias': self.biases}
-        with open('weights_c.pkl', 'wb') as f:
+    def save_weights(self, file_path):
+        new_dict = {key.replace("b", "fc"): value for key, value in self.biases.items()}
+        weights_dict = {'weights': self.weights, 'bias': new_dict}
+        with open(file_path, 'wb') as f:
             pickle.dump(weights_dict, f)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
     parser.add_argument('--dataset_root', type=str, required=True, help='Root directory of the dataset.')
-    parser.add_argument('--save', type=str, required=True, help='Path to save the weights.')
+    parser.add_argument('--save_weights_path', type=str, required=True, help='Path to save the weights.')
 
     args = parser.parse_args()
 
-    # Load data
+    start_time = time.time()
     train_loader, val_loader = load_data(args.dataset_root)
 
     X_train, Y_train = loader_to_numpy(train_loader)
 
-    # Initialize neural network
     nn = NeuralNetwork(learning_rate=0.001)
 
-    # Train the neural network
-    nn.train(X_train, Y_train, epochs=1000, batch_size=256, optimizer='adam', adaptive=False)
-
-    # Save the weights
-    # nn.save_weights()
+    nn.train(X_train, Y_train, epochs=5000, batch_size=256, optimizer='adam', path=args.save_weights_path, time_limiter = 890)
