@@ -312,6 +312,7 @@ class NeuralNetwork:
         else :
             n_batches = Y_train.shape[0] // batch_size
 
+        losses = []
         for epoch in range(epochs) :
             epoch_loss = 0.
             num_samples = 0
@@ -327,24 +328,23 @@ class NeuralNetwork:
                 loss = self.compute_loss(Y_batch, Y_pred)
                 epoch_loss += loss
                 num_samples += Y_batch.shape[0]
-                self.backward(X_batch, Y_batch, Y_pred, t=epoch+1)
+                self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
 
             elapsed_time = time.time() - start_time
         
-            if adaptive :
-                k = 5e-7
-                self.learning_rate /= (1 + k * (epoch+1))
-
+            
             out_val = self.forward(X_val)
-            loss_val = self.compute_loss(Y_val, out_val) / Y_val.shape[0] 
+            loss_val = self.compute_loss(one_hot(Y_val), out_val) / Y_val.shape[0] 
+            losses.append(loss_val)
 
             if (loss_val) < best_loss:
                 best_loss = loss_val
 
             print(f'Epoch {epoch+1}/{epochs}, Loss: {epoch_loss/num_samples}, val_loss: {loss_val}')
 
-        self.save_weights()
+        # self.save_weights()
         print(f'best validation loss : {best_loss}')
+        return losses
 
     def save_weights(self):
         weights_dict = {'weights': self.weights, 'bias': self.biases}
@@ -354,7 +354,7 @@ class NeuralNetwork:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train a neural network for binary classification.')
     parser.add_argument('--dataset_root', type=str, required=True, help='Root directory of the dataset.')
-    parser.add_argument('--save', type=str, required=True, help='Path to save the weights.')
+    parser.add_argument('--save_losses_path', type=str, required=True, help='Path to save the loss arrays.')
 
     args = parser.parse_args()
 
@@ -368,4 +368,8 @@ if __name__ == '__main__':
     nn = NeuralNetwork(learning_rate=0.001)
 
     # Train the neural network
-    nn.train(X_train, Y_train, X_val, Y_val, epochs=500, batch_size=256, optimizer='adam', adaptive=False)
+    losses = nn.train(X_train, Y_train, X_val, Y_val, epochs=500, batch_size=256, optimizer='adam', adaptive=False)
+    losses_file_path = os.path.join(args.save_losses_path, 'losses_5l_relu.pkl')
+    with open(losses_file_path, 'wb') as f:
+        pickle.dump(losses, f)
+    print(f'Loss arrays saved at: {losses_file_path}')

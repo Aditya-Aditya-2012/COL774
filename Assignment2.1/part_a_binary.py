@@ -105,13 +105,6 @@ class NeuralNetwork:
             pickle.dump(weights_dict, f)
 
     def train(self, X_train, Y_train, epochs=15, batch_size=256, path='results') :
-        directory = path
-        file_name = "weights.pkl"
-        file_path = os.path.join(directory, file_name)
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-
         n_batches = Y_train.shape[0] / batch_size
 
         if(n_batches > (Y_train.shape[0] // batch_size)) :
@@ -133,7 +126,7 @@ class NeuralNetwork:
 
                 self.backward(X_batch, Y_batch, Y_pred)
             
-            self.save_weights(file_path)
+            self.save_weights(path)
 
 
 if __name__ == '__main__':

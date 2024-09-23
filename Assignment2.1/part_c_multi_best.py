@@ -295,12 +295,6 @@ class NeuralNetwork:
         return cross_entropy
 
     def train(self, X_train, Y_train, epochs=15, batch_size=256, optimizer='gd', path='results', time_limiter = 875):
-        directory = path
-        file_name = "weights.pkl"
-        file_path = os.path.join(directory, file_name)
-
-        if not os.path.exists(directory):
-            os.makedirs(directory)
 
         best_loss = float('inf')
         n_batches = Y_train.shape[0] / batch_size
@@ -332,7 +326,7 @@ class NeuralNetwork:
         
             if epoch_loss/num_samples < best_loss:
                 best_loss = epoch_loss/num_samples
-                self.save_weights(file_path)
+                self.save_weights(path)
 
             elapsed_time = time.time() - start_time
             if(elapsed_time > time_limiter) :
@@ -359,4 +353,4 @@ if __name__ == '__main__':
 
     nn = NeuralNetwork(learning_rate=0.001)
 
-    nn.train(X_train, Y_train, epochs=5000, batch_size=256, optimizer='adam', path=args.save_weights_path, time_limiter = 890)
+    nn.train(X_train, Y_train, epochs=5000, batch_size=256, optimizer='adam', path=args.save_weights_path, time_limiter = 850)
