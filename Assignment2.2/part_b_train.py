@@ -81,11 +81,11 @@ if __name__ == "__main__":
     # Call the training function
     train_model(train_loader, args.save_weights_path)
 
-# Epoch 1/8, Loss: 1.9823882389068603
-# Epoch 2/8, Loss: 1.3701076889038086
-# Epoch 3/8, Loss: 1.1311376786231995
-# Epoch 4/8, Loss: 0.9450771856307983
-# Epoch 5/8, Loss: 0.7888378834724427
-# Epoch 6/8, Loss: 0.6361054658889771
-# Epoch 7/8, Loss: 0.5515371155738831
-# Epoch 8/8, Loss: 0.46223207950592043
+# Epoch 1/8, Loss: 1.9824, Test Accuracy: 38.38%
+# Epoch 2/8, Loss: 1.3701, Test Accuracy: 48.50%
+# Epoch 3/8, Loss: 1.1311, Test Accuracy: 61.00%
+# Epoch 4/8, Loss: 0.9451, Test Accuracy: 64.25%
+# Epoch 5/8, Loss: 0.7888, Test Accuracy: 70.25%
+# Epoch 6/8, Loss: 0.6361, Test Accuracy: 74.25%
+# Epoch 7/8, Loss: 0.5515, Test Accuracy: 74.62%
+# Epoch 8/8, Loss: 0.4622, Test Accuracy: 75.75%

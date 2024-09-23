@@ -54,7 +54,7 @@ def train_model(train_loader, save_weights_path):
 
         # Save model state after each epoch
         torch.save(model.state_dict(), save_weights_path)
-        print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader)}')
+        # print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader)}')
 
 if __name__ == "__main__":
     # Parse command line arguments
@@ -68,17 +68,9 @@ if __name__ == "__main__":
     dataset = CustomImageDataset(root_dir=args.train_dataset_root, csv=os.path.join(args.train_dataset_root, "public_train.csv"), transform=transform)
 
     # Create DataLoader
-    train_loader = DataLoader(dataset, batch_size=128, shuffle=True)
+    train_loader = DataLoader(dataset, batch_size=128, shuffle=False)
 
     # Call the training function
     train_model(train_loader, args.save_weights_path)
 
 
-# Epoch 1/8, Loss: 0.7307024683271136
-# Epoch 2/8, Loss: 0.6707820211138044
-# Epoch 3/8, Loss: 0.6504454868180412
-# Epoch 4/8, Loss: 0.5798747709819249
-# Epoch 5/8, Loss: 0.5024801364966801
-# Epoch 6/8, Loss: 0.40918560538973126
-# Epoch 7/8, Loss: 0.3721990372453417
-# Epoch 8/8, Loss: 0.34294359598840984
