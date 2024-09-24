@@ -1,0 +1,5 @@
+Epoch Number:  1, Batch Number:  1, Batch Loss(before updating weights):  3.1652362831705776e-05
+Epoch Number:  2, Batch Number:  1, Batch Loss(before updating weights):  3.152498027302252e-05
+Epoch Number:  3, Batch Number:  1, Batch Loss(before updating weights):  3.152491753003209e-05
+Epoch Number:  4, Batch Number:  1, Batch Loss(before updating weights):  3.152489797779461e-05
+Epoch Number:  5, Batch Number:  1, Batch Loss(before updating weights):  3.15248787398564e-05

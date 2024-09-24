@@ -1,0 +1,989 @@
+Hospital Service Area
+Hospital County
+Operating Certificate Number
+Permanent Facility Id
+Facility Name
+Zip Code - 3 digits
+Type of Admission
+Patient Disposition
+CCSR Diagnosis Code
+CCSR Diagnosis Description
+CCSR Procedure Code
+CCSR Procedure Description
+APR DRG Code
+APR DRG Description
+APR MDC Code
+APR MDC Description
+Payment Typology 1
+Payment Typology 2
+Payment Typology 3
+Birth Weight
+Age Group_2
+Age Group_3
+Age Group_4
+Age Group_5
+Gender_2
+Gender_3
+Race_2
+Race_3
+Race_4
+Ethnicity_2
+Ethnicity_3
+Ethnicity_4
+APR Severity of Illness Code_2
+APR Severity of Illness Code_3
+APR Severity of Illness Code_4
+APR Severity of Illness Description_2.0
+APR Severity of Illness Description_3.0
+APR Severity of Illness Description_4.0
+APR Risk of Mortality_2.0
+APR Risk of Mortality_3.0
+APR Risk of Mortality_4.0
+APR Medical Surgical Description_3
+Emergency Department Indicator_2
+Hospital Service Area^2
+Hospital Service Area Hospital County
+Hospital Service Area Operating Certificate Number
+Hospital Service Area Permanent Facility Id
+Hospital Service Area Facility Name
+Hospital Service Area Zip Code - 3 digits
+Hospital Service Area Type of Admission
+Hospital Service Area Patient Disposition
+Hospital Service Area CCSR Diagnosis Code
+Hospital Service Area CCSR Diagnosis Description
+Hospital Service Area CCSR Procedure Code
+Hospital Service Area CCSR Procedure Description
+Hospital Service Area APR DRG Code
+Hospital Service Area APR DRG Description
+Hospital Service Area APR MDC Code
+Hospital Service Area APR MDC Description
+Hospital Service Area Payment Typology 1
+Hospital Service Area Payment Typology 2
+Hospital Service Area Payment Typology 3
+Hospital Service Area Birth Weight
+Hospital Service Area Age Group_2
+Hospital Service Area Age Group_3
+Hospital Service Area Age Group_4
+Hospital Service Area Age Group_5
+Hospital Service Area Gender_2
+Hospital Service Area Gender_3
+Hospital Service Area Race_2
+Hospital Service Area Race_3
+Hospital Service Area Race_4
+Hospital Service Area Ethnicity_2
+Hospital Service Area Ethnicity_3
+Hospital Service Area Ethnicity_4
+Hospital Service Area APR Severity of Illness Code_2
+Hospital Service Area APR Severity of Illness Code_3
+Hospital Service Area APR Severity of Illness Code_4
+Hospital Service Area APR Severity of Illness Description_2.0
+Hospital Service Area APR Severity of Illness Description_3.0
+Hospital Service Area APR Severity of Illness Description_4.0
+Hospital Service Area APR Risk of Mortality_2.0
+Hospital Service Area APR Risk of Mortality_3.0
+Hospital Service Area APR Risk of Mortality_4.0
+Hospital Service Area APR Medical Surgical Description_3
+Hospital Service Area Emergency Department Indicator_2
+Hospital County^2
+Hospital County Operating Certificate Number
+Hospital County Permanent Facility Id
+Hospital County Facility Name
+Hospital County Zip Code - 3 digits
+Hospital County Type of Admission
+Hospital County Patient Disposition
+Hospital County CCSR Diagnosis Code
+Hospital County CCSR Diagnosis Description
+Hospital County CCSR Procedure Code
+Hospital County CCSR Procedure Description
+Hospital County APR DRG Code
+Hospital County APR DRG Description
+Hospital County APR MDC Code
+Hospital County APR MDC Description
+Hospital County Payment Typology 1
+Hospital County Payment Typology 2
+Hospital County Payment Typology 3
+Hospital County Birth Weight
+Hospital County Age Group_2
+Hospital County Age Group_3
+Hospital County Age Group_4
+Hospital County Age Group_5
+Hospital County Gender_2
+Hospital County Gender_3
+Hospital County Race_2
+Hospital County Race_3
+Hospital County Race_4
+Hospital County Ethnicity_2
+Hospital County Ethnicity_3
+Hospital County Ethnicity_4
+Hospital County APR Severity of Illness Code_2
+Hospital County APR Severity of Illness Code_3
+Hospital County APR Severity of Illness Code_4
+Hospital County APR Severity of Illness Description_2.0
+Hospital County APR Severity of Illness Description_3.0
+Hospital County APR Severity of Illness Description_4.0
+Hospital County APR Risk of Mortality_2.0
+Hospital County APR Risk of Mortality_3.0
+Hospital County APR Risk of Mortality_4.0
+Hospital County APR Medical Surgical Description_3
+Hospital County Emergency Department Indicator_2
+Operating Certificate Number^2
+Operating Certificate Number Permanent Facility Id
+Operating Certificate Number Facility Name
+Operating Certificate Number Zip Code - 3 digits
+Operating Certificate Number Type of Admission
+Operating Certificate Number Patient Disposition
+Operating Certificate Number CCSR Diagnosis Code
+Operating Certificate Number CCSR Diagnosis Description
+Operating Certificate Number CCSR Procedure Code
+Operating Certificate Number CCSR Procedure Description
+Operating Certificate Number APR DRG Code
+Operating Certificate Number APR DRG Description
+Operating Certificate Number APR MDC Code
+Operating Certificate Number APR MDC Description
+Operating Certificate Number Payment Typology 1
+Operating Certificate Number Payment Typology 2
+Operating Certificate Number Payment Typology 3
+Operating Certificate Number Birth Weight
+Operating Certificate Number Age Group_2
+Operating Certificate Number Age Group_3
+Operating Certificate Number Age Group_4
+Operating Certificate Number Age Group_5
+Operating Certificate Number Gender_2
+Operating Certificate Number Gender_3
+Operating Certificate Number Race_2
+Operating Certificate Number Race_3
+Operating Certificate Number Race_4
+Operating Certificate Number Ethnicity_2
+Operating Certificate Number Ethnicity_3
+Operating Certificate Number Ethnicity_4
+Operating Certificate Number APR Severity of Illness Code_2
+Operating Certificate Number APR Severity of Illness Code_3
+Operating Certificate Number APR Severity of Illness Code_4
+Operating Certificate Number APR Severity of Illness Description_2.0
+Operating Certificate Number APR Severity of Illness Description_3.0
+Operating Certificate Number APR Severity of Illness Description_4.0
+Operating Certificate Number APR Risk of Mortality_2.0
+Operating Certificate Number APR Risk of Mortality_3.0
+Operating Certificate Number APR Risk of Mortality_4.0
+Operating Certificate Number APR Medical Surgical Description_3
+Operating Certificate Number Emergency Department Indicator_2
+Permanent Facility Id^2
+Permanent Facility Id Facility Name
+Permanent Facility Id Zip Code - 3 digits
+Permanent Facility Id Type of Admission
+Permanent Facility Id Patient Disposition
+Permanent Facility Id CCSR Diagnosis Code
+Permanent Facility Id CCSR Diagnosis Description
+Permanent Facility Id CCSR Procedure Code
+Permanent Facility Id CCSR Procedure Description
+Permanent Facility Id APR DRG Code
+Permanent Facility Id APR DRG Description
+Permanent Facility Id APR MDC Code
+Permanent Facility Id APR MDC Description
+Permanent Facility Id Payment Typology 1
+Permanent Facility Id Payment Typology 2
+Permanent Facility Id Payment Typology 3
+Permanent Facility Id Birth Weight
+Permanent Facility Id Age Group_2
+Permanent Facility Id Age Group_3
+Permanent Facility Id Age Group_4
+Permanent Facility Id Age Group_5
+Permanent Facility Id Gender_2
+Permanent Facility Id Gender_3
+Permanent Facility Id Race_2
+Permanent Facility Id Race_3
+Permanent Facility Id Race_4
+Permanent Facility Id Ethnicity_2
+Permanent Facility Id Ethnicity_3
+Permanent Facility Id Ethnicity_4
+Permanent Facility Id APR Severity of Illness Code_2
+Permanent Facility Id APR Severity of Illness Code_3
+Permanent Facility Id APR Severity of Illness Code_4
+Permanent Facility Id APR Severity of Illness Description_2.0
+Permanent Facility Id APR Severity of Illness Description_3.0
+Permanent Facility Id APR Severity of Illness Description_4.0
+Permanent Facility Id APR Risk of Mortality_2.0
+Permanent Facility Id APR Risk of Mortality_3.0
+Permanent Facility Id APR Risk of Mortality_4.0
+Permanent Facility Id APR Medical Surgical Description_3
+Permanent Facility Id Emergency Department Indicator_2
+Facility Name^2
+Facility Name Zip Code - 3 digits
+Facility Name Type of Admission
+Facility Name Patient Disposition
+Facility Name CCSR Diagnosis Code
+Facility Name CCSR Diagnosis Description
+Facility Name CCSR Procedure Code
+Facility Name CCSR Procedure Description
+Facility Name APR DRG Code
+Facility Name APR DRG Description
+Facility Name APR MDC Code
+Facility Name APR MDC Description
+Facility Name Payment Typology 1
+Facility Name Payment Typology 2
+Facility Name Payment Typology 3
+Facility Name Birth Weight
+Facility Name Age Group_2
+Facility Name Age Group_3
+Facility Name Age Group_4
+Facility Name Age Group_5
+Facility Name Gender_2
+Facility Name Gender_3
+Facility Name Race_2
+Facility Name Race_3
+Facility Name Race_4
+Facility Name Ethnicity_2
+Facility Name Ethnicity_3
+Facility Name Ethnicity_4
+Facility Name APR Severity of Illness Code_2
+Facility Name APR Severity of Illness Code_3
+Facility Name APR Severity of Illness Code_4
+Facility Name APR Severity of Illness Description_2.0
+Facility Name APR Severity of Illness Description_3.0
+Facility Name APR Severity of Illness Description_4.0
+Facility Name APR Risk of Mortality_2.0
+Facility Name APR Risk of Mortality_3.0
+Facility Name APR Risk of Mortality_4.0
+Facility Name APR Medical Surgical Description_3
+Facility Name Emergency Department Indicator_2
+Zip Code - 3 digits^2
+Zip Code - 3 digits Type of Admission
+Zip Code - 3 digits Patient Disposition
+Zip Code - 3 digits CCSR Diagnosis Code
+Zip Code - 3 digits CCSR Diagnosis Description
+Zip Code - 3 digits CCSR Procedure Code
+Zip Code - 3 digits CCSR Procedure Description
+Zip Code - 3 digits APR DRG Code
+Zip Code - 3 digits APR DRG Description
+Zip Code - 3 digits APR MDC Code
+Zip Code - 3 digits APR MDC Description
+Zip Code - 3 digits Payment Typology 1
+Zip Code - 3 digits Payment Typology 2
+Zip Code - 3 digits Payment Typology 3
+Zip Code - 3 digits Birth Weight
+Zip Code - 3 digits Age Group_2
+Zip Code - 3 digits Age Group_3
+Zip Code - 3 digits Age Group_4
+Zip Code - 3 digits Age Group_5
+Zip Code - 3 digits Gender_2
+Zip Code - 3 digits Gender_3
+Zip Code - 3 digits Race_2
+Zip Code - 3 digits Race_3
+Zip Code - 3 digits Race_4
+Zip Code - 3 digits Ethnicity_2
+Zip Code - 3 digits Ethnicity_3
+Zip Code - 3 digits Ethnicity_4
+Zip Code - 3 digits APR Severity of Illness Code_2
+Zip Code - 3 digits APR Severity of Illness Code_3
+Zip Code - 3 digits APR Severity of Illness Code_4
+Zip Code - 3 digits APR Severity of Illness Description_2.0
+Zip Code - 3 digits APR Severity of Illness Description_3.0
+Zip Code - 3 digits APR Severity of Illness Description_4.0
+Zip Code - 3 digits APR Risk of Mortality_2.0
+Zip Code - 3 digits APR Risk of Mortality_3.0
+Zip Code - 3 digits APR Risk of Mortality_4.0
+Zip Code - 3 digits APR Medical Surgical Description_3
+Zip Code - 3 digits Emergency Department Indicator_2
+Type of Admission^2
+Type of Admission Patient Disposition
+Type of Admission CCSR Diagnosis Code
+Type of Admission CCSR Diagnosis Description
+Type of Admission CCSR Procedure Code
+Type of Admission CCSR Procedure Description
+Type of Admission APR DRG Code
+Type of Admission APR DRG Description
+Type of Admission APR MDC Code
+Type of Admission APR MDC Description
+Type of Admission Payment Typology 1
+Type of Admission Payment Typology 2
+Type of Admission Payment Typology 3
+Type of Admission Birth Weight
+Type of Admission Age Group_2
+Type of Admission Age Group_3
+Type of Admission Age Group_4
+Type of Admission Age Group_5
+Type of Admission Gender_2
+Type of Admission Gender_3
+Type of Admission Race_2
+Type of Admission Race_3
+Type of Admission Race_4
+Type of Admission Ethnicity_2
+Type of Admission Ethnicity_3
+Type of Admission Ethnicity_4
+Type of Admission APR Severity of Illness Code_2
+Type of Admission APR Severity of Illness Code_3
+Type of Admission APR Severity of Illness Code_4
+Type of Admission APR Severity of Illness Description_2.0
+Type of Admission APR Severity of Illness Description_3.0
+Type of Admission APR Severity of Illness Description_4.0
+Type of Admission APR Risk of Mortality_2.0
+Type of Admission APR Risk of Mortality_3.0
+Type of Admission APR Risk of Mortality_4.0
+Type of Admission APR Medical Surgical Description_3
+Type of Admission Emergency Department Indicator_2
+Patient Disposition^2
+Patient Disposition CCSR Diagnosis Code
+Patient Disposition CCSR Diagnosis Description
+Patient Disposition CCSR Procedure Code
+Patient Disposition CCSR Procedure Description
+Patient Disposition APR DRG Code
+Patient Disposition APR DRG Description
+Patient Disposition APR MDC Code
+Patient Disposition APR MDC Description
+Patient Disposition Payment Typology 1
+Patient Disposition Payment Typology 2
+Patient Disposition Payment Typology 3
+Patient Disposition Birth Weight
+Patient Disposition Age Group_2
+Patient Disposition Age Group_3
+Patient Disposition Age Group_4
+Patient Disposition Age Group_5
+Patient Disposition Gender_2
+Patient Disposition Gender_3
+Patient Disposition Race_2
+Patient Disposition Race_3
+Patient Disposition Race_4
+Patient Disposition Ethnicity_2
+Patient Disposition Ethnicity_3
+Patient Disposition Ethnicity_4
+Patient Disposition APR Severity of Illness Code_2
+Patient Disposition APR Severity of Illness Code_3
+Patient Disposition APR Severity of Illness Code_4
+Patient Disposition APR Severity of Illness Description_2.0
+Patient Disposition APR Severity of Illness Description_3.0
+Patient Disposition APR Severity of Illness Description_4.0
+Patient Disposition APR Risk of Mortality_2.0
+Patient Disposition APR Risk of Mortality_3.0
+Patient Disposition APR Risk of Mortality_4.0
+Patient Disposition APR Medical Surgical Description_3
+Patient Disposition Emergency Department Indicator_2
+CCSR Diagnosis Code^2
+CCSR Diagnosis Code CCSR Diagnosis Description
+CCSR Diagnosis Code CCSR Procedure Code
+CCSR Diagnosis Code CCSR Procedure Description
+CCSR Diagnosis Code APR DRG Code
+CCSR Diagnosis Code APR DRG Description
+CCSR Diagnosis Code APR MDC Code
+CCSR Diagnosis Code APR MDC Description
+CCSR Diagnosis Code Payment Typology 1
+CCSR Diagnosis Code Payment Typology 2
+CCSR Diagnosis Code Payment Typology 3
+CCSR Diagnosis Code Birth Weight
+CCSR Diagnosis Code Age Group_2
+CCSR Diagnosis Code Age Group_3
+CCSR Diagnosis Code Age Group_4
+CCSR Diagnosis Code Age Group_5
+CCSR Diagnosis Code Gender_2
+CCSR Diagnosis Code Gender_3
+CCSR Diagnosis Code Race_2
+CCSR Diagnosis Code Race_3
+CCSR Diagnosis Code Race_4
+CCSR Diagnosis Code Ethnicity_2
+CCSR Diagnosis Code Ethnicity_3
+CCSR Diagnosis Code Ethnicity_4
+CCSR Diagnosis Code APR Severity of Illness Code_2
+CCSR Diagnosis Code APR Severity of Illness Code_3
+CCSR Diagnosis Code APR Severity of Illness Code_4
+CCSR Diagnosis Code APR Severity of Illness Description_2.0
+CCSR Diagnosis Code APR Severity of Illness Description_3.0
+CCSR Diagnosis Code APR Severity of Illness Description_4.0
+CCSR Diagnosis Code APR Risk of Mortality_2.0
+CCSR Diagnosis Code APR Risk of Mortality_3.0
+CCSR Diagnosis Code APR Risk of Mortality_4.0
+CCSR Diagnosis Code APR Medical Surgical Description_3
+CCSR Diagnosis Code Emergency Department Indicator_2
+CCSR Diagnosis Description^2
+CCSR Diagnosis Description CCSR Procedure Code
+CCSR Diagnosis Description CCSR Procedure Description
+CCSR Diagnosis Description APR DRG Code
+CCSR Diagnosis Description APR DRG Description
+CCSR Diagnosis Description APR MDC Code
+CCSR Diagnosis Description APR MDC Description
+CCSR Diagnosis Description Payment Typology 1
+CCSR Diagnosis Description Payment Typology 2
+CCSR Diagnosis Description Payment Typology 3
+CCSR Diagnosis Description Birth Weight
+CCSR Diagnosis Description Age Group_2
+CCSR Diagnosis Description Age Group_3
+CCSR Diagnosis Description Age Group_4
+CCSR Diagnosis Description Age Group_5
+CCSR Diagnosis Description Gender_2
+CCSR Diagnosis Description Gender_3
+CCSR Diagnosis Description Race_2
+CCSR Diagnosis Description Race_3
+CCSR Diagnosis Description Race_4
+CCSR Diagnosis Description Ethnicity_2
+CCSR Diagnosis Description Ethnicity_3
+CCSR Diagnosis Description Ethnicity_4
+CCSR Diagnosis Description APR Severity of Illness Code_2
+CCSR Diagnosis Description APR Severity of Illness Code_3
+CCSR Diagnosis Description APR Severity of Illness Code_4
+CCSR Diagnosis Description APR Severity of Illness Description_2.0
+CCSR Diagnosis Description APR Severity of Illness Description_3.0
+CCSR Diagnosis Description APR Severity of Illness Description_4.0
+CCSR Diagnosis Description APR Risk of Mortality_2.0
+CCSR Diagnosis Description APR Risk of Mortality_3.0
+CCSR Diagnosis Description APR Risk of Mortality_4.0
+CCSR Diagnosis Description APR Medical Surgical Description_3
+CCSR Diagnosis Description Emergency Department Indicator_2
+CCSR Procedure Code^2
+CCSR Procedure Code CCSR Procedure Description
+CCSR Procedure Code APR DRG Code
+CCSR Procedure Code APR DRG Description
+CCSR Procedure Code APR MDC Code
+CCSR Procedure Code APR MDC Description
+CCSR Procedure Code Payment Typology 1
+CCSR Procedure Code Payment Typology 2
+CCSR Procedure Code Payment Typology 3
+CCSR Procedure Code Birth Weight
+CCSR Procedure Code Age Group_2
+CCSR Procedure Code Age Group_3
+CCSR Procedure Code Age Group_4
+CCSR Procedure Code Age Group_5
+CCSR Procedure Code Gender_2
+CCSR Procedure Code Gender_3
+CCSR Procedure Code Race_2
+CCSR Procedure Code Race_3
+CCSR Procedure Code Race_4
+CCSR Procedure Code Ethnicity_2
+CCSR Procedure Code Ethnicity_3
+CCSR Procedure Code Ethnicity_4
+CCSR Procedure Code APR Severity of Illness Code_2
+CCSR Procedure Code APR Severity of Illness Code_3
+CCSR Procedure Code APR Severity of Illness Code_4
+CCSR Procedure Code APR Severity of Illness Description_2.0
+CCSR Procedure Code APR Severity of Illness Description_3.0
+CCSR Procedure Code APR Severity of Illness Description_4.0
+CCSR Procedure Code APR Risk of Mortality_2.0
+CCSR Procedure Code APR Risk of Mortality_3.0
+CCSR Procedure Code APR Risk of Mortality_4.0
+CCSR Procedure Code APR Medical Surgical Description_3
+CCSR Procedure Code Emergency Department Indicator_2
+CCSR Procedure Description^2
+CCSR Procedure Description APR DRG Code
+CCSR Procedure Description APR DRG Description
+CCSR Procedure Description APR MDC Code
+CCSR Procedure Description APR MDC Description
+CCSR Procedure Description Payment Typology 1
+CCSR Procedure Description Payment Typology 2
+CCSR Procedure Description Payment Typology 3
+CCSR Procedure Description Birth Weight
+CCSR Procedure Description Age Group_2
+CCSR Procedure Description Age Group_3
+CCSR Procedure Description Age Group_4
+CCSR Procedure Description Age Group_5
+CCSR Procedure Description Gender_2
+CCSR Procedure Description Gender_3
+CCSR Procedure Description Race_2
+CCSR Procedure Description Race_3
+CCSR Procedure Description Race_4
+CCSR Procedure Description Ethnicity_2
+CCSR Procedure Description Ethnicity_3
+CCSR Procedure Description Ethnicity_4
+CCSR Procedure Description APR Severity of Illness Code_2
+CCSR Procedure Description APR Severity of Illness Code_3
+CCSR Procedure Description APR Severity of Illness Code_4
+CCSR Procedure Description APR Severity of Illness Description_2.0
+CCSR Procedure Description APR Severity of Illness Description_3.0
+CCSR Procedure Description APR Severity of Illness Description_4.0
+CCSR Procedure Description APR Risk of Mortality_2.0
+CCSR Procedure Description APR Risk of Mortality_3.0
+CCSR Procedure Description APR Risk of Mortality_4.0
+CCSR Procedure Description APR Medical Surgical Description_3
+CCSR Procedure Description Emergency Department Indicator_2
+APR DRG Code^2
+APR DRG Code APR DRG Description
+APR DRG Code APR MDC Code
+APR DRG Code APR MDC Description
+APR DRG Code Payment Typology 1
+APR DRG Code Payment Typology 2
+APR DRG Code Payment Typology 3
+APR DRG Code Birth Weight
+APR DRG Code Age Group_2
+APR DRG Code Age Group_3
+APR DRG Code Age Group_4
+APR DRG Code Age Group_5
+APR DRG Code Gender_2
+APR DRG Code Gender_3
+APR DRG Code Race_2
+APR DRG Code Race_3
+APR DRG Code Race_4
+APR DRG Code Ethnicity_2
+APR DRG Code Ethnicity_3
+APR DRG Code Ethnicity_4
+APR DRG Code APR Severity of Illness Code_2
+APR DRG Code APR Severity of Illness Code_3
+APR DRG Code APR Severity of Illness Code_4
+APR DRG Code APR Severity of Illness Description_2.0
+APR DRG Code APR Severity of Illness Description_3.0
+APR DRG Code APR Severity of Illness Description_4.0
+APR DRG Code APR Risk of Mortality_2.0
+APR DRG Code APR Risk of Mortality_3.0
+APR DRG Code APR Risk of Mortality_4.0
+APR DRG Code APR Medical Surgical Description_3
+APR DRG Code Emergency Department Indicator_2
+APR DRG Description^2
+APR DRG Description APR MDC Code
+APR DRG Description APR MDC Description
+APR DRG Description Payment Typology 1
+APR DRG Description Payment Typology 2
+APR DRG Description Payment Typology 3
+APR DRG Description Birth Weight
+APR DRG Description Age Group_2
+APR DRG Description Age Group_3
+APR DRG Description Age Group_4
+APR DRG Description Age Group_5
+APR DRG Description Gender_2
+APR DRG Description Gender_3
+APR DRG Description Race_2
+APR DRG Description Race_3
+APR DRG Description Race_4
+APR DRG Description Ethnicity_2
+APR DRG Description Ethnicity_3
+APR DRG Description Ethnicity_4
+APR DRG Description APR Severity of Illness Code_2
+APR DRG Description APR Severity of Illness Code_3
+APR DRG Description APR Severity of Illness Code_4
+APR DRG Description APR Severity of Illness Description_2.0
+APR DRG Description APR Severity of Illness Description_3.0
+APR DRG Description APR Severity of Illness Description_4.0
+APR DRG Description APR Risk of Mortality_2.0
+APR DRG Description APR Risk of Mortality_3.0
+APR DRG Description APR Risk of Mortality_4.0
+APR DRG Description APR Medical Surgical Description_3
+APR DRG Description Emergency Department Indicator_2
+APR MDC Code^2
+APR MDC Code APR MDC Description
+APR MDC Code Payment Typology 1
+APR MDC Code Payment Typology 2
+APR MDC Code Payment Typology 3
+APR MDC Code Birth Weight
+APR MDC Code Age Group_2
+APR MDC Code Age Group_3
+APR MDC Code Age Group_4
+APR MDC Code Age Group_5
+APR MDC Code Gender_2
+APR MDC Code Gender_3
+APR MDC Code Race_2
+APR MDC Code Race_3
+APR MDC Code Race_4
+APR MDC Code Ethnicity_2
+APR MDC Code Ethnicity_3
+APR MDC Code Ethnicity_4
+APR MDC Code APR Severity of Illness Code_2
+APR MDC Code APR Severity of Illness Code_3
+APR MDC Code APR Severity of Illness Code_4
+APR MDC Code APR Severity of Illness Description_2.0
+APR MDC Code APR Severity of Illness Description_3.0
+APR MDC Code APR Severity of Illness Description_4.0
+APR MDC Code APR Risk of Mortality_2.0
+APR MDC Code APR Risk of Mortality_3.0
+APR MDC Code APR Risk of Mortality_4.0
+APR MDC Code APR Medical Surgical Description_3
+APR MDC Code Emergency Department Indicator_2
+APR MDC Description^2
+APR MDC Description Payment Typology 1
+APR MDC Description Payment Typology 2
+APR MDC Description Payment Typology 3
+APR MDC Description Birth Weight
+APR MDC Description Age Group_2
+APR MDC Description Age Group_3
+APR MDC Description Age Group_4
+APR MDC Description Age Group_5
+APR MDC Description Gender_2
+APR MDC Description Gender_3
+APR MDC Description Race_2
+APR MDC Description Race_3
+APR MDC Description Race_4
+APR MDC Description Ethnicity_2
+APR MDC Description Ethnicity_3
+APR MDC Description Ethnicity_4
+APR MDC Description APR Severity of Illness Code_2
+APR MDC Description APR Severity of Illness Code_3
+APR MDC Description APR Severity of Illness Code_4
+APR MDC Description APR Severity of Illness Description_2.0
+APR MDC Description APR Severity of Illness Description_3.0
+APR MDC Description APR Severity of Illness Description_4.0
+APR MDC Description APR Risk of Mortality_2.0
+APR MDC Description APR Risk of Mortality_3.0
+APR MDC Description APR Risk of Mortality_4.0
+APR MDC Description APR Medical Surgical Description_3
+APR MDC Description Emergency Department Indicator_2
+Payment Typology 1^2
+Payment Typology 1 Payment Typology 2
+Payment Typology 1 Payment Typology 3
+Payment Typology 1 Birth Weight
+Payment Typology 1 Age Group_2
+Payment Typology 1 Age Group_3
+Payment Typology 1 Age Group_4
+Payment Typology 1 Age Group_5
+Payment Typology 1 Gender_2
+Payment Typology 1 Gender_3
+Payment Typology 1 Race_2
+Payment Typology 1 Race_3
+Payment Typology 1 Race_4
+Payment Typology 1 Ethnicity_2
+Payment Typology 1 Ethnicity_3
+Payment Typology 1 Ethnicity_4
+Payment Typology 1 APR Severity of Illness Code_2
+Payment Typology 1 APR Severity of Illness Code_3
+Payment Typology 1 APR Severity of Illness Code_4
+Payment Typology 1 APR Severity of Illness Description_2.0
+Payment Typology 1 APR Severity of Illness Description_3.0
+Payment Typology 1 APR Severity of Illness Description_4.0
+Payment Typology 1 APR Risk of Mortality_2.0
+Payment Typology 1 APR Risk of Mortality_3.0
+Payment Typology 1 APR Risk of Mortality_4.0
+Payment Typology 1 APR Medical Surgical Description_3
+Payment Typology 1 Emergency Department Indicator_2
+Payment Typology 2^2
+Payment Typology 2 Payment Typology 3
+Payment Typology 2 Birth Weight
+Payment Typology 2 Age Group_2
+Payment Typology 2 Age Group_3
+Payment Typology 2 Age Group_4
+Payment Typology 2 Age Group_5
+Payment Typology 2 Gender_2
+Payment Typology 2 Gender_3
+Payment Typology 2 Race_2
+Payment Typology 2 Race_3
+Payment Typology 2 Race_4
+Payment Typology 2 Ethnicity_2
+Payment Typology 2 Ethnicity_3
+Payment Typology 2 Ethnicity_4
+Payment Typology 2 APR Severity of Illness Code_2
+Payment Typology 2 APR Severity of Illness Code_3
+Payment Typology 2 APR Severity of Illness Code_4
+Payment Typology 2 APR Severity of Illness Description_2.0
+Payment Typology 2 APR Severity of Illness Description_3.0
+Payment Typology 2 APR Severity of Illness Description_4.0
+Payment Typology 2 APR Risk of Mortality_2.0
+Payment Typology 2 APR Risk of Mortality_3.0
+Payment Typology 2 APR Risk of Mortality_4.0
+Payment Typology 2 APR Medical Surgical Description_3
+Payment Typology 2 Emergency Department Indicator_2
+Payment Typology 3^2
+Payment Typology 3 Birth Weight
+Payment Typology 3 Age Group_2
+Payment Typology 3 Age Group_3
+Payment Typology 3 Age Group_4
+Payment Typology 3 Age Group_5
+Payment Typology 3 Gender_2
+Payment Typology 3 Gender_3
+Payment Typology 3 Race_2
+Payment Typology 3 Race_3
+Payment Typology 3 Race_4
+Payment Typology 3 Ethnicity_2
+Payment Typology 3 Ethnicity_3
+Payment Typology 3 Ethnicity_4
+Payment Typology 3 APR Severity of Illness Code_2
+Payment Typology 3 APR Severity of Illness Code_3
+Payment Typology 3 APR Severity of Illness Code_4
+Payment Typology 3 APR Severity of Illness Description_2.0
+Payment Typology 3 APR Severity of Illness Description_3.0
+Payment Typology 3 APR Severity of Illness Description_4.0
+Payment Typology 3 APR Risk of Mortality_2.0
+Payment Typology 3 APR Risk of Mortality_3.0
+Payment Typology 3 APR Risk of Mortality_4.0
+Payment Typology 3 APR Medical Surgical Description_3
+Payment Typology 3 Emergency Department Indicator_2
+Birth Weight^2
+Birth Weight Age Group_2
+Birth Weight Age Group_3
+Birth Weight Age Group_4
+Birth Weight Age Group_5
+Birth Weight Gender_2
+Birth Weight Gender_3
+Birth Weight Race_2
+Birth Weight Race_3
+Birth Weight Race_4
+Birth Weight Ethnicity_2
+Birth Weight Ethnicity_3
+Birth Weight Ethnicity_4
+Birth Weight APR Severity of Illness Code_2
+Birth Weight APR Severity of Illness Code_3
+Birth Weight APR Severity of Illness Code_4
+Birth Weight APR Severity of Illness Description_2.0
+Birth Weight APR Severity of Illness Description_3.0
+Birth Weight APR Severity of Illness Description_4.0
+Birth Weight APR Risk of Mortality_2.0
+Birth Weight APR Risk of Mortality_3.0
+Birth Weight APR Risk of Mortality_4.0
+Birth Weight APR Medical Surgical Description_3
+Birth Weight Emergency Department Indicator_2
+Age Group_2^2
+Age Group_2 Age Group_3
+Age Group_2 Age Group_4
+Age Group_2 Age Group_5
+Age Group_2 Gender_2
+Age Group_2 Gender_3
+Age Group_2 Race_2
+Age Group_2 Race_3
+Age Group_2 Race_4
+Age Group_2 Ethnicity_2
+Age Group_2 Ethnicity_3
+Age Group_2 Ethnicity_4
+Age Group_2 APR Severity of Illness Code_2
+Age Group_2 APR Severity of Illness Code_3
+Age Group_2 APR Severity of Illness Code_4
+Age Group_2 APR Severity of Illness Description_2.0
+Age Group_2 APR Severity of Illness Description_3.0
+Age Group_2 APR Severity of Illness Description_4.0
+Age Group_2 APR Risk of Mortality_2.0
+Age Group_2 APR Risk of Mortality_3.0
+Age Group_2 APR Risk of Mortality_4.0
+Age Group_2 APR Medical Surgical Description_3
+Age Group_2 Emergency Department Indicator_2
+Age Group_3^2
+Age Group_3 Age Group_4
+Age Group_3 Age Group_5
+Age Group_3 Gender_2
+Age Group_3 Gender_3
+Age Group_3 Race_2
+Age Group_3 Race_3
+Age Group_3 Race_4
+Age Group_3 Ethnicity_2
+Age Group_3 Ethnicity_3
+Age Group_3 Ethnicity_4
+Age Group_3 APR Severity of Illness Code_2
+Age Group_3 APR Severity of Illness Code_3
+Age Group_3 APR Severity of Illness Code_4
+Age Group_3 APR Severity of Illness Description_2.0
+Age Group_3 APR Severity of Illness Description_3.0
+Age Group_3 APR Severity of Illness Description_4.0
+Age Group_3 APR Risk of Mortality_2.0
+Age Group_3 APR Risk of Mortality_3.0
+Age Group_3 APR Risk of Mortality_4.0
+Age Group_3 APR Medical Surgical Description_3
+Age Group_3 Emergency Department Indicator_2
+Age Group_4^2
+Age Group_4 Age Group_5
+Age Group_4 Gender_2
+Age Group_4 Gender_3
+Age Group_4 Race_2
+Age Group_4 Race_3
+Age Group_4 Race_4
+Age Group_4 Ethnicity_2
+Age Group_4 Ethnicity_3
+Age Group_4 Ethnicity_4
+Age Group_4 APR Severity of Illness Code_2
+Age Group_4 APR Severity of Illness Code_3
+Age Group_4 APR Severity of Illness Code_4
+Age Group_4 APR Severity of Illness Description_2.0
+Age Group_4 APR Severity of Illness Description_3.0
+Age Group_4 APR Severity of Illness Description_4.0
+Age Group_4 APR Risk of Mortality_2.0
+Age Group_4 APR Risk of Mortality_3.0
+Age Group_4 APR Risk of Mortality_4.0
+Age Group_4 APR Medical Surgical Description_3
+Age Group_4 Emergency Department Indicator_2
+Age Group_5^2
+Age Group_5 Gender_2
+Age Group_5 Gender_3
+Age Group_5 Race_2
+Age Group_5 Race_3
+Age Group_5 Race_4
+Age Group_5 Ethnicity_2
+Age Group_5 Ethnicity_3
+Age Group_5 Ethnicity_4
+Age Group_5 APR Severity of Illness Code_2
+Age Group_5 APR Severity of Illness Code_3
+Age Group_5 APR Severity of Illness Code_4
+Age Group_5 APR Severity of Illness Description_2.0
+Age Group_5 APR Severity of Illness Description_3.0
+Age Group_5 APR Severity of Illness Description_4.0
+Age Group_5 APR Risk of Mortality_2.0
+Age Group_5 APR Risk of Mortality_3.0
+Age Group_5 APR Risk of Mortality_4.0
+Age Group_5 APR Medical Surgical Description_3
+Age Group_5 Emergency Department Indicator_2
+Gender_2^2
+Gender_2 Gender_3
+Gender_2 Race_2
+Gender_2 Race_3
+Gender_2 Race_4
+Gender_2 Ethnicity_2
+Gender_2 Ethnicity_3
+Gender_2 Ethnicity_4
+Gender_2 APR Severity of Illness Code_2
+Gender_2 APR Severity of Illness Code_3
+Gender_2 APR Severity of Illness Code_4
+Gender_2 APR Severity of Illness Description_2.0
+Gender_2 APR Severity of Illness Description_3.0
+Gender_2 APR Severity of Illness Description_4.0
+Gender_2 APR Risk of Mortality_2.0
+Gender_2 APR Risk of Mortality_3.0
+Gender_2 APR Risk of Mortality_4.0
+Gender_2 APR Medical Surgical Description_3
+Gender_2 Emergency Department Indicator_2
+Gender_3^2
+Gender_3 Race_2
+Gender_3 Race_3
+Gender_3 Race_4
+Gender_3 Ethnicity_2
+Gender_3 Ethnicity_3
+Gender_3 Ethnicity_4
+Gender_3 APR Severity of Illness Code_2
+Gender_3 APR Severity of Illness Code_3
+Gender_3 APR Severity of Illness Code_4
+Gender_3 APR Severity of Illness Description_2.0
+Gender_3 APR Severity of Illness Description_3.0
+Gender_3 APR Severity of Illness Description_4.0
+Gender_3 APR Risk of Mortality_2.0
+Gender_3 APR Risk of Mortality_3.0
+Gender_3 APR Risk of Mortality_4.0
+Gender_3 APR Medical Surgical Description_3
+Gender_3 Emergency Department Indicator_2
+Race_2^2
+Race_2 Race_3
+Race_2 Race_4
+Race_2 Ethnicity_2
+Race_2 Ethnicity_3
+Race_2 Ethnicity_4
+Race_2 APR Severity of Illness Code_2
+Race_2 APR Severity of Illness Code_3
+Race_2 APR Severity of Illness Code_4
+Race_2 APR Severity of Illness Description_2.0
+Race_2 APR Severity of Illness Description_3.0
+Race_2 APR Severity of Illness Description_4.0
+Race_2 APR Risk of Mortality_2.0
+Race_2 APR Risk of Mortality_3.0
+Race_2 APR Risk of Mortality_4.0
+Race_2 APR Medical Surgical Description_3
+Race_2 Emergency Department Indicator_2
+Race_3^2
+Race_3 Race_4
+Race_3 Ethnicity_2
+Race_3 Ethnicity_3
+Race_3 Ethnicity_4
+Race_3 APR Severity of Illness Code_2
+Race_3 APR Severity of Illness Code_3
+Race_3 APR Severity of Illness Code_4
+Race_3 APR Severity of Illness Description_2.0
+Race_3 APR Severity of Illness Description_3.0
+Race_3 APR Severity of Illness Description_4.0
+Race_3 APR Risk of Mortality_2.0
+Race_3 APR Risk of Mortality_3.0
+Race_3 APR Risk of Mortality_4.0
+Race_3 APR Medical Surgical Description_3
+Race_3 Emergency Department Indicator_2
+Race_4^2
+Race_4 Ethnicity_2
+Race_4 Ethnicity_3
+Race_4 Ethnicity_4
+Race_4 APR Severity of Illness Code_2
+Race_4 APR Severity of Illness Code_3
+Race_4 APR Severity of Illness Code_4
+Race_4 APR Severity of Illness Description_2.0
+Race_4 APR Severity of Illness Description_3.0
+Race_4 APR Severity of Illness Description_4.0
+Race_4 APR Risk of Mortality_2.0
+Race_4 APR Risk of Mortality_3.0
+Race_4 APR Risk of Mortality_4.0
+Race_4 APR Medical Surgical Description_3
+Race_4 Emergency Department Indicator_2
+Ethnicity_2^2
+Ethnicity_2 Ethnicity_3
+Ethnicity_2 Ethnicity_4
+Ethnicity_2 APR Severity of Illness Code_2
+Ethnicity_2 APR Severity of Illness Code_3
+Ethnicity_2 APR Severity of Illness Code_4
+Ethnicity_2 APR Severity of Illness Description_2.0
+Ethnicity_2 APR Severity of Illness Description_3.0
+Ethnicity_2 APR Severity of Illness Description_4.0
+Ethnicity_2 APR Risk of Mortality_2.0
+Ethnicity_2 APR Risk of Mortality_3.0
+Ethnicity_2 APR Risk of Mortality_4.0
+Ethnicity_2 APR Medical Surgical Description_3
+Ethnicity_2 Emergency Department Indicator_2
+Ethnicity_3^2
+Ethnicity_3 Ethnicity_4
+Ethnicity_3 APR Severity of Illness Code_2
+Ethnicity_3 APR Severity of Illness Code_3
+Ethnicity_3 APR Severity of Illness Code_4
+Ethnicity_3 APR Severity of Illness Description_2.0
+Ethnicity_3 APR Severity of Illness Description_3.0
+Ethnicity_3 APR Severity of Illness Description_4.0
+Ethnicity_3 APR Risk of Mortality_2.0
+Ethnicity_3 APR Risk of Mortality_3.0
+Ethnicity_3 APR Risk of Mortality_4.0
+Ethnicity_3 APR Medical Surgical Description_3
+Ethnicity_3 Emergency Department Indicator_2
+Ethnicity_4^2
+Ethnicity_4 APR Severity of Illness Code_2
+Ethnicity_4 APR Severity of Illness Code_3
+Ethnicity_4 APR Severity of Illness Code_4
+Ethnicity_4 APR Severity of Illness Description_2.0
+Ethnicity_4 APR Severity of Illness Description_3.0
+Ethnicity_4 APR Severity of Illness Description_4.0
+Ethnicity_4 APR Risk of Mortality_2.0
+Ethnicity_4 APR Risk of Mortality_3.0
+Ethnicity_4 APR Risk of Mortality_4.0
+Ethnicity_4 APR Medical Surgical Description_3
+Ethnicity_4 Emergency Department Indicator_2
+APR Severity of Illness Code_2^2
+APR Severity of Illness Code_2 APR Severity of Illness Code_3
+APR Severity of Illness Code_2 APR Severity of Illness Code_4
+APR Severity of Illness Code_2 APR Severity of Illness Description_2.0
+APR Severity of Illness Code_2 APR Severity of Illness Description_3.0
+APR Severity of Illness Code_2 APR Severity of Illness Description_4.0
+APR Severity of Illness Code_2 APR Risk of Mortality_2.0
+APR Severity of Illness Code_2 APR Risk of Mortality_3.0
+APR Severity of Illness Code_2 APR Risk of Mortality_4.0
+APR Severity of Illness Code_2 APR Medical Surgical Description_3
+APR Severity of Illness Code_2 Emergency Department Indicator_2
+APR Severity of Illness Code_3^2
+APR Severity of Illness Code_3 APR Severity of Illness Code_4
+APR Severity of Illness Code_3 APR Severity of Illness Description_2.0
+APR Severity of Illness Code_3 APR Severity of Illness Description_3.0
+APR Severity of Illness Code_3 APR Severity of Illness Description_4.0
+APR Severity of Illness Code_3 APR Risk of Mortality_2.0
+APR Severity of Illness Code_3 APR Risk of Mortality_3.0
+APR Severity of Illness Code_3 APR Risk of Mortality_4.0
+APR Severity of Illness Code_3 APR Medical Surgical Description_3
+APR Severity of Illness Code_3 Emergency Department Indicator_2
+APR Severity of Illness Code_4^2
+APR Severity of Illness Code_4 APR Severity of Illness Description_2.0
+APR Severity of Illness Code_4 APR Severity of Illness Description_3.0
+APR Severity of Illness Code_4 APR Severity of Illness Description_4.0
+APR Severity of Illness Code_4 APR Risk of Mortality_2.0
+APR Severity of Illness Code_4 APR Risk of Mortality_3.0
+APR Severity of Illness Code_4 APR Risk of Mortality_4.0
+APR Severity of Illness Code_4 APR Medical Surgical Description_3
+APR Severity of Illness Code_4 Emergency Department Indicator_2
+APR Severity of Illness Description_2.0^2
+APR Severity of Illness Description_2.0 APR Severity of Illness Description_3.0
+APR Severity of Illness Description_2.0 APR Severity of Illness Description_4.0
+APR Severity of Illness Description_2.0 APR Risk of Mortality_2.0
+APR Severity of Illness Description_2.0 APR Risk of Mortality_3.0
+APR Severity of Illness Description_2.0 APR Risk of Mortality_4.0
+APR Severity of Illness Description_2.0 APR Medical Surgical Description_3
+APR Severity of Illness Description_2.0 Emergency Department Indicator_2
+APR Severity of Illness Description_3.0^2
+APR Severity of Illness Description_3.0 APR Severity of Illness Description_4.0
+APR Severity of Illness Description_3.0 APR Risk of Mortality_2.0
+APR Severity of Illness Description_3.0 APR Risk of Mortality_3.0
+APR Severity of Illness Description_3.0 APR Risk of Mortality_4.0
+APR Severity of Illness Description_3.0 APR Medical Surgical Description_3
+APR Severity of Illness Description_3.0 Emergency Department Indicator_2
+APR Severity of Illness Description_4.0^2
+APR Severity of Illness Description_4.0 APR Risk of Mortality_2.0
+APR Severity of Illness Description_4.0 APR Risk of Mortality_3.0
+APR Severity of Illness Description_4.0 APR Risk of Mortality_4.0
+APR Severity of Illness Description_4.0 APR Medical Surgical Description_3
+APR Severity of Illness Description_4.0 Emergency Department Indicator_2
+APR Risk of Mortality_2.0^2
+APR Risk of Mortality_2.0 APR Risk of Mortality_3.0
+APR Risk of Mortality_2.0 APR Risk of Mortality_4.0
+APR Risk of Mortality_2.0 APR Medical Surgical Description_3
+APR Risk of Mortality_2.0 Emergency Department Indicator_2
+APR Risk of Mortality_3.0^2
+APR Risk of Mortality_3.0 APR Risk of Mortality_4.0
+APR Risk of Mortality_3.0 APR Medical Surgical Description_3
+APR Risk of Mortality_3.0 Emergency Department Indicator_2
+APR Risk of Mortality_4.0^2
+APR Risk of Mortality_4.0 APR Medical Surgical Description_3
+APR Risk of Mortality_4.0 Emergency Department Indicator_2
+APR Medical Surgical Description_3^2
+APR Medical Surgical Description_3 Emergency Department Indicator_2
+Emergency Department Indicator_2^2
