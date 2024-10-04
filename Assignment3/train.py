@@ -1,76 +1,14 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import DataLoader, Subset, TensorDataset
 import torchvision.transforms as transforms
-from torch.utils.data import DataLoader, TensorDataset
-import pickle
+import numpy as np
+import time
 import sys
-import os
+import pickle
 
-class Bottleneck(nn.Module):
-    expansion = 4
-    def __init__(self, in_channels, out_channels, stride=1, downsample=None):
-        super(Bottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(out_channels)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(out_channels)
-        self.conv3 = nn.Conv2d(out_channels, out_channels * self.expansion, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(out_channels * self.expansion)
-        self.relu = nn.ReLU(inplace=True)
-        self.downsample = downsample
-
-    def forward(self, x):
-        identity = x
-        out = self.relu(self.bn1(self.conv1(x)))
-        out = self.relu(self.bn2(self.conv2(out)))
-        out = self.bn3(self.conv3(out))
-        if self.downsample is not None:
-            identity = self.downsample(x)
-        out += identity
-        out = self.relu(out)
-        return out
-
-class ResNet152(nn.Module):
-    def __init__(self, num_classes=100):
-        super(ResNet152, self).__init__()
-        self.in_channels = 64
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.bn1 = nn.BatchNorm2d(64)
-        self.relu = nn.ReLU(inplace=True)
-        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
-        self.layer1 = self._make_layer(Bottleneck, 64, 3)
-        self.layer2 = self._make_layer(Bottleneck, 128, 8, stride=2)
-        self.layer3 = self._make_layer(Bottleneck, 256, 36, stride=2)
-        self.layer4 = self._make_layer(Bottleneck, 512, 3, stride=2)
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * Bottleneck.expansion, num_classes)
-        
-    def _make_layer(self, block, out_channels, blocks, stride=1):
-        downsample = None
-        if stride != 1 or self.in_channels != out_channels * block.expansion:
-            downsample = nn.Sequential(
-                nn.Conv2d(self.in_channels, out_channels * block.expansion, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(out_channels * block.expansion),
-            )
-        layers = []
-        layers.append(block(self.in_channels, out_channels, stride, downsample))
-        self.in_channels = out_channels * block.expansion
-        for _ in range(1, blocks):
-            layers.append(block(self.in_channels, out_channels))
-        return nn.Sequential(*layers)
-    
-    def forward(self, x):
-        x = self.maxpool(self.relu(self.bn1(self.conv1(x))))
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-        x = self.avgpool(x)
-        x = torch.flatten(x, 1)
-        x = self.fc(x)
-        return x
-    
+torch.manual_seed(0)
 
 def load_data(file_path):
     print(f"Loading data from {file_path}...")
@@ -79,43 +17,181 @@ def load_data(file_path):
     print("Data loading completed.")
     return data
 
-class ConfidenceLoss(nn.Module):
-    def __init__(self, alpha, gamma):
-        super(ConfidenceLoss, self).__init__()
-        self.alpha = alpha
-        self.gamma = gamma
-        self.ce_loss = nn.CrossEntropyLoss(reduction='none')
+# Wide ResNet implementation (same as before)
+class BasicBlock(nn.Module):
+    def __init__(self, in_planes, out_planes, stride, dropRate=0.0):
+        super(BasicBlock, self).__init__()
+        self.bn1 = nn.BatchNorm2d(in_planes)
+        self.relu1 = nn.ReLU(inplace=True)
+        self.conv1 = nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                               padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_planes)
+        self.relu2 = nn.ReLU(inplace=True)
+        self.conv2 = nn.Conv2d(out_planes, out_planes, kernel_size=3, stride=1,
+                               padding=1, bias=False)
+        self.droprate = dropRate
+        self.equalInOut = (in_planes == out_planes)
+        self.convShortcut = (not self.equalInOut) and nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride,
+                               padding=0, bias=False) or None
 
-    def forward(self, outputs, targets):
-        ce_loss = self.ce_loss(outputs, targets)
-        probs = torch.softmax(outputs, dim=1)
-        confidence, predicted = torch.max(probs, dim=1)
-        
-        correct_mask = (predicted == targets)
-        confident_mask = (confidence >= self.alpha)
-        
-        high_accuracy_loss = ce_loss[correct_mask & confident_mask].mean()
-        low_accuracy_loss = self.gamma * ce_loss[~correct_mask & confident_mask].mean()
-        
-        return high_accuracy_loss + low_accuracy_loss
+    def forward(self, x):
+        if not self.equalInOut:
+            x = self.relu1(self.bn1(x))
+        else:
+            out = self.relu1(self.bn1(x))
+        out = self.relu2(self.bn2(self.conv1(out if self.equalInOut else x)))
+        if self.droprate > 0:
+            out = nn.functional.dropout(out, p=self.droprate, training=self.training)
+        out = self.conv2(out)
+        return torch.add(x if self.equalInOut else self.convShortcut(x), out)
 
-def train_model(model, train_loader, criterion, optimizer, device, num_epochs=10):
-    print("Starting training...")
-    model.train()
-    for epoch in range(num_epochs):
-        print(f'Starting Epoch {epoch+1}/{num_epochs}...')
+class NetworkBlock(nn.Module):
+    def __init__(self, nb_layers, in_planes, out_planes, block, stride, dropRate=0.0):
+        super(NetworkBlock, self).__init__()
+        self.layer = self._make_layer(block, in_planes, out_planes, nb_layers, stride, dropRate)
+
+    def _make_layer(self, block, in_planes, out_planes, nb_layers, stride, dropRate):
+        layers = []
+        for i in range(int(nb_layers)):
+            layers.append(block(i == 0 and in_planes or out_planes, out_planes, i == 0 and stride or 1, dropRate))
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        return self.layer(x)
+
+class WideResNet(nn.Module):
+    def __init__(self, depth, num_classes, widen_factor=1, dropRate=0.0):
+        super(WideResNet, self).__init__()
+        nChannels = [16, 16*widen_factor, 32*widen_factor, 64*widen_factor]
+        assert((depth - 4) % 6 == 0)
+        n = (depth - 4) / 6
+        block = BasicBlock
+        # 1st conv before any network block
+        self.conv1 = nn.Conv2d(3, nChannels[0], kernel_size=3, stride=1,
+                               padding=1, bias=False)
+        # 1st block
+        self.block1 = NetworkBlock(n, nChannels[0], nChannels[1], block, 1, dropRate)
+        # 2nd block
+        self.block2 = NetworkBlock(n, nChannels[1], nChannels[2], block, 2, dropRate)
+        # 3rd block
+        self.block3 = NetworkBlock(n, nChannels[2], nChannels[3], block, 2, dropRate)
+        # global average pooling and classifier
+        self.bn1 = nn.BatchNorm2d(nChannels[3])
+        self.relu = nn.ReLU(inplace=True)
+        self.fc = nn.Linear(nChannels[3], num_classes)
+        self.nChannels = nChannels[3]
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.bias.data.zero_()
+
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.block1(out)
+        out = self.block2(out)
+        out = self.block3(out)
+        out = self.relu(self.bn1(out))
+        out = nn.functional.avg_pool2d(out, 8)
+        out = out.view(-1, self.nChannels)
+        return self.fc(out)
+
+def calculate_accuracy(model, data_loader):
+    model.eval()  # Set model to evaluation mode
+    correct = 0
+    total = 0
+    with torch.no_grad():  # Disable gradient computation during inference
+        for inputs, labels in data_loader:
+            inputs = inputs.float()
+            labels = labels.long()
+            outputs = model(inputs)
+            _, predicted = torch.max(outputs, 1)  # Get the index of the max log-probability
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    
+    accuracy = 100 * correct / total
+    return accuracy
+
+def train_model(model, train_loader, save_weights_path):
+    model = model.float()  
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=3)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    
+    # Simple validation split (80% train, 20% validation)
+    dataset = train_loader.dataset
+    dataset_size = len(dataset)
+    indices = list(range(dataset_size))
+    split = int(np.floor(0.2 * dataset_size))
+    
+    train_indices, val_indices = indices[split:], indices[:split]
+    
+    train_sampler = Subset(dataset, train_indices)
+    val_sampler = Subset(dataset, val_indices)
+    
+    train_loader = DataLoader(train_sampler, batch_size=train_loader.batch_size, shuffle=True)
+    val_loader = DataLoader(val_sampler, batch_size=train_loader.batch_size, shuffle=False)
+    
+    training_duration = 5 * 60 * 60  
+    start_time = time.time()
+
+    best_val_accuracy = 0
+
+    epoch = 0
+    while time.time() - start_time < training_duration:
+        epoch += 1
+        model.train()
         running_loss = 0.0
-        for batch_idx, (inputs, labels) in enumerate(train_loader):
-            print(f"Processing batch {batch_idx+1}/{len(train_loader)}...")
-            inputs, labels = inputs.to(device), labels.to(device)
+        correct = 0
+        total = 0
+        for inputs, labels in train_loader:
+            inputs = inputs.float().to(device) 
+            labels = labels.long().to(device)  
+
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
+            
+            # Gradient clipping
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            
             optimizer.step()
+
             running_loss += loss.item()
-            print(f"Batch {batch_idx+1} loss: {loss.item()}")
-        print(f'Epoch {epoch+1} completed. Average Loss: {running_loss/len(train_loader)}')
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+        epoch_loss = running_loss / len(train_loader)
+        train_accuracy = 100 * correct / total
+        
+        # Evaluate on validation set
+        val_accuracy = calculate_accuracy(model, val_loader)
+        
+        elapsed_time = time.time() - start_time
+        print(f"Epoch {epoch}, Time: {elapsed_time:.2f}s, Loss: {epoch_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%, Val Accuracy: {val_accuracy:.2f}%")
+        
+        scheduler.step(val_accuracy)
+        
+        if val_accuracy > best_val_accuracy:
+            best_val_accuracy = val_accuracy
+            torch.save(model.state_dict(), save_weights_path)
+            print(f"Saved new best model with validation accuracy: {best_val_accuracy:.2f}%")
+
+
+    model.load_state_dict(torch.load(save_weights_path))
+    final_val_accuracy = calculate_accuracy(model, val_loader)
+    print(f"Final Validation accuracy for the model: {final_val_accuracy:.2f}%")
+    
+    return model, final_val_accuracy
 
 def main():
     if len(sys.argv) != 4:
@@ -125,8 +201,6 @@ def main():
     train_file = sys.argv[1]
     alpha = float(sys.argv[2])
     gamma = float(sys.argv[3])
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     print("Loading and preparing data...")
     train_data = load_data(train_file)
@@ -146,12 +220,14 @@ def main():
     print("Data preparation completed.")
     
     print("Initializing the model...")
-    model = ResNet152().to(device)
-    criterion = ConfidenceLoss(alpha, gamma)
-    optimizer = optim.Adam(model.parameters(), lr=0.001)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = WideResNet(depth=28, num_classes=100, widen_factor=10, dropRate=0.3).to(device)
     
     print("Starting model training...")
-    train_model(model, train_loader, criterion, optimizer, device)
+    save_weights_path = 'best_model.pth'
+    model, final_val_accuracy = train_model(model, train_loader, save_weights_path)
+
+    print(final_val_accuracy)
     
     print("Training completed. Saving the model...")
     torch.save(model.state_dict(), 'model.pth')
