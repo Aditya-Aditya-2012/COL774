@@ -8,6 +8,7 @@ import numpy as np
 import time
 import sys
 import pickle
+from datasets import load_dataset
 
 torch.manual_seed(0)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -242,7 +243,7 @@ def train_model(model, train_loader, save_weights_path):
 
     model = model.float().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-5)
+    optimizer = optim.Adam(model.parameters(), lr=0.1, weight_decay=5e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=3)
     
     # Simple validation split (80% train, 20% validation)
@@ -250,7 +251,6 @@ def train_model(model, train_loader, save_weights_path):
     dataset_size = len(dataset)
     indices = list(range(dataset_size))
     split = int(np.floor(0.2 * dataset_size))
-    
     train_indices, val_indices = indices[split:], indices[:split]
     
     train_sampler = Subset(dataset, train_indices)
@@ -259,30 +259,36 @@ def train_model(model, train_loader, save_weights_path):
     train_loader = DataLoader(train_sampler, batch_size=train_loader.batch_size, shuffle=True)
     val_loader = DataLoader(val_sampler, batch_size=train_loader.batch_size, shuffle=False)
     
-    training_duration = 2.5 * 60 * 60  
+    train_losses = []
+    val_losses = []
+    train_accuracies = []
+    val_accuracies = []
+
+    # Training loop
+    training_duration = 4.5 * 60 * 60
     start_time = time.time()
-
     best_val_accuracy = 0
-
     epoch = 0
-    while time.time() - start_time < training_duration:
+
+    while time.time() - start_time < training_duration and epochs<300:
         epoch += 1
         model.train()
         running_loss = 0.0
         correct = 0
         total = 0
+
+        # Training loop
         for inputs, labels in train_loader:
-            inputs = inputs.float().to(device) 
-            labels = labels.long().to(device)  
+            inputs = inputs.float().to(device)
+            labels = labels.long().to(device)
 
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
-            
+
             # Gradient clipping
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            
             optimizer.step()
 
             running_loss += loss.item()
@@ -292,30 +298,67 @@ def train_model(model, train_loader, save_weights_path):
 
         epoch_loss = running_loss / len(train_loader)
         train_accuracy = 100 * correct / total
-        
+        train_losses.append(epoch_loss)
+        train_accuracies.append(train_accuracy)
+
         # Evaluate on validation set
         val_accuracy = calculate_accuracy(model, val_loader)
+        val_loss = 0.0
+        for inputs, labels in val_loader:
+            inputs = inputs.float().to(device)
+            labels = labels.long().to(device)
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            val_loss += loss.item()
+
+        val_loss /= len(val_loader)
+        val_losses.append(val_loss)
+        val_accuracies.append(val_accuracy)
+
         elapsed_time = time.time() - start_time
-        print(f"Epoch {epoch}, Time: {elapsed_time:.2f}s, Loss: {epoch_loss:.4f}, Train Accuracy: {train_accuracy:.2f}%, Val Accuracy: {val_accuracy:.2f}%")
-        
+        print(f"Epoch {epoch}, Time: {elapsed_time:.2f}s, Train Loss: {epoch_loss:.4f}, "
+              f"Train Accuracy: {train_accuracy:.2f}%, Val Loss: {val_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%")
+
         scheduler.step(val_accuracy)
-        
+
+        # Save the best model
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
             torch.save(model.state_dict(), save_weights_path)
             print(f"Saved new best model with validation accuracy: {best_val_accuracy:.2f}%")
 
-
     model.load_state_dict(torch.load(save_weights_path))
-
-    scaled_model = ModelWithTemperature(model)
-    scaled_model.set_temperature(val_loader)
-    
-    final_val_accuracy = calculate_accuracy(scaled_model, val_loader)
+    final_val_accuracy = calculate_accuracy(model, val_loader)
 
     print(f"Final Validation accuracy for the calibrated model: {final_val_accuracy:.2f}%")
+    # Plotting training and validation curves
+    epochs_range = range(1, len(train_losses) + 1)
+    plt.figure(figsize=(10, 6))
     
-    return scaled_model, final_val_accuracy
+    # Plot loss
+    plt.subplot(1, 2, 1)
+    plt.plot(epochs_range, train_losses, label='Training Loss')
+    plt.plot(epochs_range, val_losses, label='Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss')
+    plt.legend()
+
+    # Plot accuracy
+    plt.subplot(1, 2, 2)
+    plt.plot(epochs_range, train_accuracies, label='Training Accuracy')
+    plt.plot(epochs_range, val_accuracies, label='Validation Accuracy')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy (%)')
+    plt.title('Training and Validation Accuracy')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig('loss_wrn_b64.png')
+    plt.show()
+
+    return model, best_val_accuracy
+
 
 def main():
     if len(sys.argv) != 4:
@@ -326,33 +369,34 @@ def main():
     alpha = float(sys.argv[2])
     gamma = float(sys.argv[3])
     
-    print("Loading and preparing data...")
-    train_data = load_data(train_file)
+    # print("Loading and preparing data...")
+    # train_data = load_data(train_file)
     
-    # Assuming train_data is a list of (image_tensor, label) tuples
-    images = torch.stack([img for img, _ in train_data])
-    labels = torch.tensor([label for _, label in train_data])
+    # # Assuming train_data is a list of (image_tensor, label) tuples
+    # images = torch.stack([img for img, _ in train_data])
+    # labels = torch.tensor([label for _, label in train_data])
     
-    # Normalize the images
-    print("Normalizing the images...")
-    normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-    normalized_images = normalize(images)
+    # # Normalize the images
+    # print("Normalizing the images...")
+    # normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    # normalized_images = normalize(images)
     
-    print("Creating train dataset and dataloader...")
-    train_dataset = TensorDataset(normalized_images, labels)
-    train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
-    print("Data preparation completed.")
+    # print("Creating train dataset and dataloader...")
+    # train_dataset = TensorDataset(normalized_images, labels)
+    # train_loader = DataLoader(train_dataset, batch_size=256, shuffle=True)
+    # print("Data preparation completed.")
     
-    print("Initializing the model...")
+    # print("Initializing the model...")
+    train_loader, test_loader = load_dataset(batch_size=64, path_train=train_file, path_test=train_file)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = WideResNet(depth=28, num_classes=100, widen_factor=10, dropRate=0.3).to(device)
     
     print("Starting model training...")
-    save_weights_path = 'best_model.pth'
+    save_weights_path = 'best_model_wrn_b64.pth'
     model, final_val_accuracy = train_model(model, train_loader, save_weights_path)
     
-    print("Training completed. Saving the model...")
-    torch.save(model.state_dict(), 'model.pth')
+    # print("Training completed. Saving the model...")
+    # torch.save(model.state_dict(), 'model.pth')
     print("Model saved successfully.")
 
 if __name__ == '__main__':
