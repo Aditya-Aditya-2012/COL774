@@ -7,7 +7,7 @@ import numpy as np
 import time
 import sys
 import pickle
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 torch.manual_seed(0)
 
 def load_data(file_path):
@@ -106,8 +106,8 @@ def calculate_accuracy(model, data_loader):
     total = 0
     with torch.no_grad():  # Disable gradient computation during inference
         for inputs, labels in data_loader:
-            inputs = inputs.float()
-            labels = labels.long()
+            inputs = inputs.float().to(device)
+            labels = labels.long().to(device)
             outputs = model(inputs)
             _, predicted = torch.max(outputs, 1)  # Get the index of the max log-probability
             total += labels.size(0)
@@ -121,8 +121,6 @@ def train_model(model, train_loader, save_weights_path):
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=3)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     
     # Simple validation split (80% train, 20% validation)
@@ -145,7 +143,7 @@ def train_model(model, train_loader, save_weights_path):
     best_val_accuracy = 0
 
     epoch = 0
-    while time.time() - start_time < training_duration:
+    while epoch<125:
         epoch += 1
         model.train()
         running_loss = 0.0
@@ -235,3 +233,13 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# Epoch 106, Time: 7357.09s, Loss: 0.0065, Train Accuracy: 99.94%, Val Accuracy: 64.91%
+# Epoch 107, Time: 7426.20s, Loss: 0.0072, Train Accuracy: 99.89%, Val Accuracy: 64.59%
+# Epoch 108, Time: 7495.29s, Loss: 0.0068, Train Accuracy: 99.93%, Val Accuracy: 64.90%
+# Epoch 109, Time: 7564.38s, Loss: 0.0063, Train Accuracy: 99.95%, Val Accuracy: 64.64%
+# Epoch 110, Time: 7633.48s, Loss: 0.0066, Train Accuracy: 99.94%, Val Accuracy: 64.51%
+# Epoch 111, Time: 7702.57s, Loss: 0.0069, Train Accuracy: 99.92%, Val Accuracy: 64.67%
+# Epoch 112, Time: 7771.68s, Loss: 0.0066, Train Accuracy: 99.95%, Val Accuracy: 64.76%
+# Saved new best model with validation accuracy: 65.10%
