@@ -8,7 +8,8 @@ import numpy as np
 import time
 import sys
 import pickle
-from datasets import load_dataset
+# from datasets import load_dataset
+import matplotlib.pyplot as plt
 
 torch.manual_seed(0)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -243,7 +244,7 @@ def train_model(model, train_loader, save_weights_path):
 
     model = model.float().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.1, weight_decay=5e-4)
+    optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=5e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.1, patience=3)
     
     # Simple validation split (80% train, 20% validation)
@@ -270,7 +271,7 @@ def train_model(model, train_loader, save_weights_path):
     best_val_accuracy = 0
     epoch = 0
 
-    while time.time() - start_time < training_duration and epochs<300:
+    while time.time() - start_time < training_duration and epoch<300:
         epoch += 1
         model.train()
         running_loss = 0.0
