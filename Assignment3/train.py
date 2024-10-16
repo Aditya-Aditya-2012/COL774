@@ -174,6 +174,7 @@ def main():
     print("Loading and preparing data...")
     train_data = load_data(train_file)
     
+    #TODO try data augmentation
     # Assuming train_data is a list of (image_tensor, label) tuples
     images = torch.stack([img for img, _ in train_data])
     labels = torch.tensor([label for _, label in train_data])

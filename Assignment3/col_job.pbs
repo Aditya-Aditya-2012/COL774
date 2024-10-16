@@ -1,6 +1,6 @@
 #!/bin/sh
 ### Set the job name (for your reference)
-#PBS -N wrn64_774
+#PBS -N pyrSAM
 ### Set the project name, your department code by default
 #PBS -P col774.ce1210494.course
 ### Request email when job begins and ends
@@ -11,7 +11,7 @@
 ####
 #PBS -l select=1:ncpus=1:ngpus=1:centos=icelake
 ### Specify "wallclock time" required for this job, hhh:mm:ss
-#PBS -l walltime=6:00:00
+#PBS -l walltime=5:00:00
 export OMP_NUM_THREADS=1
 #PBS -o stdout_file
 #PBS -e stderr_file
@@ -26,7 +26,7 @@ source /home/civil/btech/ce1210494/COL774/col774/bin/activate
 conda deactivate 
 
 
-python train_wrn.py /home/civil/btech/ce1210494/A3_data/train.pkl 0.99 5
+python train.py /home/civil/btech/ce1210494/A3_data/train.pkl 0.99 5
 
 
 

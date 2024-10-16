@@ -79,7 +79,7 @@ def main():
 
     # Dynamic threshold calculation
     sorted_confidences = sorted(confidences, reverse=True)
-    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.506)]  
+    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.665)]  
 
     # Apply confidence threshold and create submission
     print("Creating submission file...")
