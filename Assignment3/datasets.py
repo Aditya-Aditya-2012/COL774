@@ -3,14 +3,18 @@ from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 import pickle
 import numpy as np
-from torchvision.transforms import AutoAugment, AutoAugmentPolicy
 
 # Custom Dataset class to handle CIFAR100 from local .pkl files
 class CIFAR100Dataset(Dataset):
-    def __init__(self, data_path, transform=None):
-        # Load the data from the pickle file
-        with open(data_path, 'rb') as f:
-            self.data = pickle.load(f)  # `self.data` is a list of tuples (image, label)
+    def __init__(self, data_path=None, data_list=None, transform=None):
+        if data_path:
+            # Load the data from the pickle file
+            with open(data_path, 'rb') as f:
+                self.data = pickle.load(f)  # `self.data` is a list of tuples (image, label)
+        elif data_list is not None:
+            self.data = data_list
+        else:
+            self.data = []
         self.transform = transform
     
     def __len__(self):
@@ -37,8 +41,26 @@ def compute_mean_std(cifar100_dataset):
     
     return mean, std
 
-# Function to load the dataset
-def load_dataset(batch_size, path_train, path_test):
+# Function to get data augmentation transforms
+def get_transforms(mean, std):
+    transform_train = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.RandomCrop(32, padding=4),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=std),
+    ])
+
+    transform_val = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=mean, std=std),
+    ])
+
+    return transform_train, transform_val
+
+# Function to load the dataset and split into train and validation sets
+def load_dataset(batch_size, path_train):
     # Load the raw dataset to compute mean and std
     raw_train_dataset = CIFAR100Dataset(data_path=path_train)
     
@@ -47,32 +69,28 @@ def load_dataset(batch_size, path_train, path_test):
     print(f"Computed Mean: {mean}")
     print(f"Computed Std: {std}")
     
-    # Use computed mean and std for normalization
-    normalizer = transforms.Normalize(mean=mean, std=std)
+    # Get transforms
+    transform_train, transform_val = get_transforms(mean, std)
     
-    # Train transform with AutoAugment
-    transform_train = transforms.Compose([
-        transforms.RandomCrop(32, padding=4),
-        transforms.RandomHorizontalFlip(),  
-        normalizer
-    ])
+    # Load full dataset without transforms
+    full_dataset = CIFAR100Dataset(data_path=path_train, transform=None)
     
-    # Test transform with normalization only
-    # transform_test = transforms.Compose([
-    #     normalizer
-    # ])
+    # Split into train and validation datasets
+    dataset_size = len(full_dataset)
+    indices = list(range(dataset_size))
+    split = int(np.floor(0.2 * dataset_size))
+    np.random.shuffle(indices)
+    train_indices, val_indices = indices[split:], indices[:split]
     
-    # Load data with transformations
-    train_dataset = CIFAR100Dataset(data_path=path_train, transform=transform_train)
-    # test_dataset = CIFAR100Dataset(data_path=path_test, transform=transform_test)
+    # Create train and validation datasets
+    train_data = [full_dataset[i] for i in train_indices]
+    val_data = [full_dataset[i] for i in val_indices]
+    
+    train_dataset = CIFAR100Dataset(data_list=train_data, transform=transform_train)
+    val_dataset = CIFAR100Dataset(data_list=val_data, transform=transform_val)
     
     # Data loaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    # test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=2)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
+    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True)
     
-    return train_loader
-
-# Example usage:
-train_path= '/home/civil/btech/ce1210494/A3_data/train.pkl'
-test_path = '/home/civil/btech/ce1210494/A3_data/test.pkl'
-# rain_loader, test_loader = load_dataset(batch_size=64, path_train=train_path, path_test=test_path)
+    return train_loader, val_loader
