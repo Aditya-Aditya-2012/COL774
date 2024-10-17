@@ -7,9 +7,9 @@ class StepLR:
     def __call__(self, epoch):
         if epoch < self.total_epochs * 3/10:
             lr = self.base
-        elif epoch < self.total_epochs * 6/10:
+        elif epoch < self.total_epochs * 4.5/10:
             lr = self.base * 0.2
-        elif epoch < self.total_epochs * 8/10:
+        elif epoch < self.total_epochs * 6/10:
             lr = self.base * 0.2 ** 2
         else:
             lr = self.base * 0.2 ** 3
