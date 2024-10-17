@@ -1,13 +1,13 @@
+import sys
+MAINPATH = ".."  # nopep8
+sys.path.append(MAINPATH)  # nopep8
+
 import torch
-import torch.nn as nn
+import numpy as np
+import pickle
+from collections import defaultdict
 from torch.utils.data import DataLoader, TensorDataset
 import torchvision.transforms as transforms
-import numpy as np
-import sys
-import pickle
-import pandas as pd
-import matplotlib.pyplot as plt
-from collections import defaultdict
 from datasets import CIFAR100Dataset, compute_mean_std
 from models.pyramidnet import ShakePyramidNet
 
@@ -76,30 +76,36 @@ def main():
     class_accuracies = {cls: (correct_predictions[cls] / total_predictions[cls]) * 100 
                         for cls in range(100)}
 
-    # Save results to a text file
-    with open("class_wise_accuracy.txt", "w") as f:
-        for cls, accuracy in class_accuracies.items():
-            f.write(f"Class {cls}: {accuracy:.2f}%\n")
+    # Compute mean and standard deviation of the accuracies
+    accuracies = np.array(list(class_accuracies.values()))
+    mean_accuracy = np.mean(accuracies)
+    std_accuracy = np.std(accuracies)
+    threshold = mean_accuracy - 2*std_accuracy
 
-    # Plotting class-wise accuracies with improved readability
-    classes = list(class_accuracies.keys())
-    accuracies = list(class_accuracies.values())
+    # Identify classes with accuracy <= mean - std
+    underperforming_classes = [cls for cls, acc in class_accuracies.items() if acc <= threshold]
 
-    plt.figure(figsize=(20, 8))
-    plt.bar(classes, accuracies, color='skyblue')
-    plt.xlabel("Class")
-    plt.ylabel("Accuracy (%)")
-    plt.title("Class-wise Accuracy on Training Set")
-    plt.xticks(ticks=classes, labels=classes, rotation=45, ha="right", fontsize=10)
-    plt.ylim(0, 100)
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # Save underperforming classes to a text file
+    with open("underperforming_classes.txt", "w") as f:
+        f.write("Classes with accuracy <= mean - 2*std:\n")
+        for cls in underperforming_classes:
+            f.write(f"Class {cls}: {class_accuracies[cls]:.2f}%\n")
 
-    # Save plot
-    plt.tight_layout()
-    plt.savefig("class_wise_accuracy.png")
-    plt.show()
+    # Save the underperforming classes to a .pkl file
+    with open("underperforming_classes.pkl", "wb") as f:
+        pickle.dump(underperforming_classes, f)
 
-    print("Class-wise accuracy calculation completed. Results saved to 'class_wise_accuracy.txt' and 'class_wise_accuracy.png'.")
+    # Sort classes by accuracy
+    sorted_accuracies = sorted(class_accuracies.items(), key=lambda item: item[1])
+
+    # Save sorted accuracies to a text file
+    with open("sorted_class_accuracies.txt", "w") as f:
+        f.write("Classes sorted by accuracy (ascending):\n")
+        for cls, acc in sorted_accuracies:
+            f.write(f"Class {cls}: {acc:.2f}%\n")
+
+    print(f"Class-wise accuracy calculation completed.")
+    print(f"Results saved to 'underperforming_classes.txt', 'underperforming_classes.pkl', and 'sorted_class_accuracies.txt'.")
 
 if __name__ == '__main__':
     main()

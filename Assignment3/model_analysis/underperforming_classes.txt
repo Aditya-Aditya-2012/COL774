@@ -1,0 +1,5 @@
+Classes with accuracy <= mean - 2*std:
+Class 11: 90.07%
+Class 55: 89.58%
+Class 59: 90.44%
+Class 72: 90.75%

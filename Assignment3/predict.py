@@ -18,6 +18,13 @@ def load_data(file_path):
     print("Data loading completed.")
     return data
 
+def load_underperforming_classes(file_path):
+    print(f"Loading underperforming classes from {file_path}...")
+    with open(file_path, 'rb') as f:
+        underperforming_classes = pickle.load(f)
+    print(f"Underperforming classes loaded: {underperforming_classes}")
+    return underperforming_classes
+
 def tta_predict(model, inputs, num_augmentations=5):
     predictions = []
     for _ in range(num_augmentations):
@@ -28,15 +35,19 @@ def tta_predict(model, inputs, num_augmentations=5):
 
 def main():
     if len(sys.argv) != 5:
-        print("Usage: python predict.py model.pth test.pkl alpha gamma")
+        print("Usage: python predict.py model.pth test.pkl alpha gamma underperforming_classes.pkl")
         sys.exit(1)
 
     model_path = sys.argv[1]
     test_file = sys.argv[2]
     alpha = float(sys.argv[3])
     gamma = float(sys.argv[4])
+    # underperforming_classes_file = '/home/civil/btech/ce1210494/COL774/Assignment3/model_analysis/underperforming_classes.pkl'
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    # Load underperforming classes
+    underperforming_classes = [11, 55, 59, 72]#, 72, 45, 98]
 
     raw_test = CIFAR100Dataset(data_path=test_file)
     mean, std = compute_mean_std(raw_test)
@@ -45,7 +56,6 @@ def main():
     # model = WideResNet(depth=28, num_classes=100, widen_factor=10, dropRate=0.3)
     model = ShakePyramidNet(depth=110, alpha=270, label=100)
     model.load_state_dict(torch.load(model_path, map_location=device))
-    # model = ModelWithTemperature(model)
     model = model.to(device)
     model.eval()
 
@@ -79,17 +89,18 @@ def main():
 
     # Dynamic threshold calculation
     sorted_confidences = sorted(confidences, reverse=True)
-    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.762)]  
+    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.763)]  
 
-    # Apply confidence threshold and create submission
+    # Apply confidence threshold and underperforming classes filter
     print("Creating submission file...")
     final_predictions = []
     for pred, conf in zip(predictions, confidences):
-        if conf >= confidence_threshold:
+        if conf >= confidence_threshold and pred not in underperforming_classes:
             final_predictions.append(pred)
         else:
             final_predictions.append(-1)
 
+    # Save the results to a CSV file
     submission = pd.DataFrame({'ID': ids, 'Predicted_label': final_predictions})
     submission.to_csv('submission.csv', index=False)
     print("Prediction completed. Submission file 'submission.csv' created.")
