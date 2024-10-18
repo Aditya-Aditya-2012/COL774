@@ -1,8 +1,8 @@
 import torch
+import numpy as np
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 import pickle
-import numpy as np
 
 # Custom Dataset class to handle CIFAR100 from local .pkl files
 class CIFAR100Dataset(Dataset):
@@ -60,36 +60,32 @@ def get_transforms(mean, std):
     return transform_train, transform_val
 
 # Function to load the dataset and split into train and validation sets
-def load_dataset(batch_size, path_train):
-    # Load the raw dataset to compute mean and std
+def load_dataset(batch_size, path_train, seed=0):
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+    
     raw_train_dataset = CIFAR100Dataset(data_path=path_train)
     
-    # Compute the mean and std from the raw dataset
     mean, std = compute_mean_std(raw_train_dataset)
     print(f"Computed Mean: {mean}")
     print(f"Computed Std: {std}")
     
-    # Get transforms
     transform_train, transform_val = get_transforms(mean, std)
     
-    # Load full dataset without transforms
     full_dataset = CIFAR100Dataset(data_path=path_train, transform=None)
     
-    # Split into train and validation datasets
     dataset_size = len(full_dataset)
     indices = list(range(dataset_size))
     split = int(np.floor(0.2 * dataset_size))
-    np.random.shuffle(indices)
+    np.random.shuffle(indices)  # This shuffle will be consistent due to the set seed
     train_indices, val_indices = indices[split:], indices[:split]
     
-    # Create train and validation datasets
     train_data = [full_dataset[i] for i in train_indices]
     val_data = [full_dataset[i] for i in val_indices]
     
     train_dataset = CIFAR100Dataset(data_list=train_data, transform=transform_train)
     val_dataset = CIFAR100Dataset(data_list=val_data, transform=transform_val)
     
-    # Data loaders
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory=True)
     

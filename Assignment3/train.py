@@ -5,31 +5,18 @@ import numpy as np
 import time
 import sys
 import matplotlib.pyplot as plt
+from make_plot import make_plots
 from datasets import CIFAR100Dataset, compute_mean_std, get_transforms, load_dataset
-from models.wideresnet import WideResNet
 from models.pyramidnet import ShakePyramidNet
 from models.smooth_ce import smooth_crossentropy
 from models.sam import SAM
+from utility.plateauLR import ReduceLROnPlateau
 from utility.step_lr import StepLR
 from utility.bypass_bn import enable_running_stats, disable_running_stats
 from utility.initialize import initialize
 
 initialize(seed=0)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-def make_plots(train_loss, val_loss, plt_name):
-    epochs_range = range(1, len(train_loss) + 1)
-    plt.figure(figsize=(10, 6))
-
-    # Plot accuracy
-    plt.plot(epochs_range, train_loss, label='Training Accuracy')
-    plt.plot(epochs_range, val_loss, label='Validation Accuracy')
-    plt.xlabel('Epochs')
-    plt.ylabel('Accuracy (%)')
-    plt.title('Training and Validation Accuracy')
-    plt.legend()
-    plt.savefig(plt_name+'.png')
-    plt.close()
 
 def calculate_accuracy(model, data_loader):
     model.eval()  # Set model to evaluation mode
@@ -47,10 +34,35 @@ def calculate_accuracy(model, data_loader):
     accuracy = 100 * correct / total
     return accuracy
 
-def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap):
+def calculate_loss(model, data_loader, loss_function):
+    model.eval()  # Set model to evaluation mode
+    total_loss = 0.0
+    total_samples = 0
+    with torch.no_grad():  # Disable gradient computation during inference
+        for inputs, labels in data_loader:
+            inputs = inputs.float().to(device)
+            labels = labels.long().to(device)
+            
+            # Get model predictions
+            outputs = model(inputs)
+            
+            # Compute loss for the batch
+            loss = loss_function(outputs, labels)
+            
+            # Accumulate loss and number of samples
+            total_loss += loss.item() * labels.size(0)
+            total_samples += labels.size(0)
+
+    # Calculate average loss over all samples
+    average_loss = total_loss / total_samples
+    return average_loss
+
+
+def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap, plot_name):
     model = model.float().to(device)
     base_optimizer = torch.optim.SGD
     optimizer = SAM(model.parameters(), base_optimizer, rho=0.05, adaptive=True, momentum=0.9, lr=0.05, weight_decay=0.0005)
+    # scheduler = ReduceLROnPlateau(optimizer, patience=10, factor=0.2, min_lr=1e-10)
     scheduler = StepLR(optimizer, 0.05, epoch_cap)
 
     train_accuracies = []
@@ -88,9 +100,12 @@ def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap):
             _, predicted = torch.max(predictions.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-    
+
+        val_loss = calculate_loss(model, val_loader, smooth_crossentropy)
+
         with torch.no_grad():
-                    scheduler(epoch)
+            scheduler(epoch)
+            # scheduler(val_loss)
 
         epoch_loss = running_loss / len(train_loader)
         train_accuracy = 100 * correct / total
@@ -99,10 +114,10 @@ def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap):
         # Evaluate on validation set
         val_accuracy = calculate_accuracy(model, val_loader)
         val_accuracies.append(val_accuracy)
-        make_plots(train_accuracies, val_accuracies, 'pyramidnet')
+        make_plots(train_accuracies, val_accuracies, plot_name)
         
         elapsed_time = time.time() - start_time
-        print(f"Epoch {epoch}, Time: {elapsed_time:.2f}s, Train Loss: {epoch_loss:.4f}, "
+        print(f"Epoch {epoch}, Time: {elapsed_time:.2f}s, Train Loss: {epoch_loss:.4f}, Val Loss: {val_loss:.4f}, "
               f"Train Accuracy: {train_accuracy:.2f}%, Val Accuracy: {val_accuracy:.2f}%")
         
         if val_accuracy > best_val_accuracy:
@@ -110,16 +125,10 @@ def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap):
             torch.save(model.state_dict(), save_weights_path)
             print(f"Saved new best model with validation accuracy: {best_val_accuracy:.2f}%")
 
-    # model.load_state_dict(torch.load(save_weights_path))
-    # final_val_accuracy = calculate_accuracy(model, val_loader)
-    # print(f"Final Validation accuracy for the model: {final_val_accuracy:.2f}%")
-    
     return model, best_val_accuracy
 
 def get_model(model_name):
-    if model_name == 'wideresnet':
-        model = WideResNet(depth=28, num_classes=100, widen_factor=10, dropRate=0.3).float().to(device)
-    elif model_name == 'pyramidnet':
+    if model_name == 'pyramidnet':
         model = ShakePyramidNet(depth=110, alpha=270, label=100).float().to(device)
     else:
         raise ValueError(f"Model {model_name} is not supported.")
@@ -137,14 +146,14 @@ def main():
     batch_size = 256  # Adjust batch size as needed
 
     print("Loading and preparing data with data augmentation...")
-    train_loader, val_loader = load_dataset(batch_size, path_train=train_file)
+    train_loader, val_loader = load_dataset(batch_size, path_train=train_file, seed=0)
 
     print("Initializing the model...")
-    model = get_model('pyramidnet')  # or 'wideresnet'
+    model = get_model('pyramidnet') 
 
     print("Starting model training...")
-    save_weights_path = 'model.pth'
-    model, final_val_accuracy = train_model(model, train_loader, val_loader, save_weights_path, epoch_cap=300)
+    save_weights_path = 'model_18_10.pth'
+    model, final_val_accuracy = train_model(model, train_loader, val_loader, save_weights_path, epoch_cap=300, plot_name='pyramidnet_step')
 
     print(f"Final Validation Accuracy: {final_val_accuracy:.2f}%")
 

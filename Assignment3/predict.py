@@ -8,7 +8,6 @@ import pickle
 import pandas as pd
 from datasets import CIFAR100Dataset, compute_mean_std
 from models.pyramidnet import ShakePyramidNet
-from train import WideResNet
 torch.manual_seed(0)
 
 def load_data(file_path):
@@ -47,7 +46,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Load underperforming classes
-    underperforming_classes = [11, 55, 59, 72]#, 72, 45, 98]
+    underperforming_classes = [10, 11, 35, 55, 72]#, 72, 45, 98]
 
     raw_test = CIFAR100Dataset(data_path=test_file)
     mean, std = compute_mean_std(raw_test)
@@ -89,7 +88,7 @@ def main():
 
     # Dynamic threshold calculation
     sorted_confidences = sorted(confidences, reverse=True)
-    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.763)]  
+    confidence_threshold = sorted_confidences[int(len(sorted_confidences) * 0.78)]  
 
     # Apply confidence threshold and underperforming classes filter
     print("Creating submission file...")

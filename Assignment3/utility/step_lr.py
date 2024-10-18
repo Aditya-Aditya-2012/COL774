@@ -11,8 +11,12 @@ class StepLR:
             lr = self.base * 0.2
         elif epoch < self.total_epochs * 6/10:
             lr = self.base * 0.2 ** 2
-        else:
+        elif epoch < self.total_epochs * 6.33/10:
             lr = self.base * 0.2 ** 3
+        elif epoch < self.total_epochs * 6.67/10:
+            lr = self.base * 0.2 ** 4
+        else:
+            lr = self.base * 0.2 ** 5
 
         for param_group in self.optimizer.param_groups:
             param_group["lr"] = lr

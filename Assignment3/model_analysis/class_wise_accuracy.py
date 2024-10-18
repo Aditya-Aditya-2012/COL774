@@ -8,7 +8,7 @@ import pickle
 from collections import defaultdict
 from torch.utils.data import DataLoader, TensorDataset
 import torchvision.transforms as transforms
-from datasets import CIFAR100Dataset, compute_mean_std
+from datasets import CIFAR100Dataset, compute_mean_std, get_transforms, load_dataset
 from models.pyramidnet import ShakePyramidNet
 
 torch.manual_seed(0)
@@ -38,23 +38,23 @@ def main():
     model.eval()
     
     # Load and prepare training data
-    raw_train = CIFAR100Dataset(data_path=train_file)
-    mean, std = compute_mean_std(raw_train)
+    # raw_train = CIFAR100Dataset(data_path=train_file)
+    # mean, std = compute_mean_std(raw_train)
 
-    print("Loading and preparing training data...")
-    train_data = load_data(train_file)
+    # print("Loading and preparing training data...")
+    # train_data = load_data(train_file)
     
-    # Assuming train_data is a list of (image_tensor, label) tuples
-    images = torch.stack([img for img, _ in train_data])
-    labels = torch.tensor([label for _, label in train_data])
+    # # Assuming train_data is a list of (image_tensor, label) tuples
+    # images = torch.stack([img for img, _ in train_data])
+    # labels = torch.tensor([label for _, label in train_data])
 
-    # Normalize the images
-    normalize = transforms.Normalize(mean=mean, std=std)
-    normalized_images = normalize(images)
+    # # Normalize the images
+    # normalize = transforms.Normalize(mean=mean, std=std)
+    # normalized_images = normalize(images)
     
-    train_dataset = TensorDataset(normalized_images, labels)
-    train_loader = DataLoader(train_dataset, batch_size=128, shuffle=False)
-
+    # train_dataset = TensorDataset(normalized_images, labels)
+    # train_loader = DataLoader(train_dataset, batch_size=128, shuffle=False)
+    train_loader, val_loader = load_dataset(256, path_train=train_file, seed=0)
     # Initialize class-wise counters
     correct_predictions = defaultdict(int)
     total_predictions = defaultdict(int)
@@ -62,7 +62,7 @@ def main():
     # Evaluate class-wise accuracy
     print("Evaluating class-wise accuracy...")
     with torch.no_grad():
-        for inputs, targets in train_loader:
+        for inputs, targets in val_loader:
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
             _, predicted = torch.max(outputs, 1)
@@ -105,7 +105,7 @@ def main():
             f.write(f"Class {cls}: {acc:.2f}%\n")
 
     print(f"Class-wise accuracy calculation completed.")
-    print(f"Results saved to 'underperforming_classes.txt', 'underperforming_classes.pkl', and 'sorted_class_accuracies.txt'.")
+    print(f"Results saved to 'underperforming_classes_val.txt', 'underperforming_classes_val.pkl', and 'sorted_class_accuracies_val.txt'.")
 
 if __name__ == '__main__':
     main()
