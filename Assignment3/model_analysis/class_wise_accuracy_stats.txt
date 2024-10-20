@@ -1,4 +1,0 @@
-Mean Accuracy: 95.73%
-Standard Deviation: 2.76%
-Minimum Accuracy: 88.89%
-Maximum Accuracy: 100.00%

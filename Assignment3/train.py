@@ -68,7 +68,7 @@ def train_model(model, train_loader, val_loader, save_weights_path, epoch_cap, p
     train_accuracies = []
     val_accuracies = []
 
-    training_duration = 5.5 * 60 * 60  
+    training_duration = 4.95 * 60 * 60  
     start_time = time.time()
 
     best_val_accuracy = 0
@@ -152,8 +152,8 @@ def main():
     model = get_model('pyramidnet') 
 
     print("Starting model training...")
-    save_weights_path = 'model_18_10.pth'
-    model, final_val_accuracy = train_model(model, train_loader, val_loader, save_weights_path, epoch_cap=300, plot_name='pyramidnet_step')
+    save_weights_path = 'model.pth'
+    model, final_val_accuracy = train_model(model, train_loader, val_loader, save_weights_path, epoch_cap=300, plot_name='pyramidnet_5hr')
 
     print(f"Final Validation Accuracy: {final_val_accuracy:.2f}%")
 

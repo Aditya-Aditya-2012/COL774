@@ -1,17 +1,17 @@
 #!/bin/sh
 ### Set the job name (for your reference)
-#PBS -N pyrSAM_step5.5
+#PBS -N pyrSAM_5hr_sky
 ### Set the project name, your department code by default
-#PBS -P col774.ce1210494.course
+#PBS -P m3rg.spons
 ### Request email when job begins and ends
 #PBS -m bea
 ### Specify email address to use for notification.
 #PBS -M $USER@iitd.ac.in
 
 ####
-#PBS -l select=1:ncpus=8:ngpus=1:mem=8G:centos=icelake
+#PBS -l select=1:ncpus=8:ngpus=1:mem=8G:centos=skylake
 ### Specify "wallclock time" required for this job, hhh:mm:ss
-#PBS -l walltime=6:00:00
+#PBS -l walltime=5:00:00
 export OMP_NUM_THREADS=1
 #PBS -o stdout_file
 #PBS -e stderr_file

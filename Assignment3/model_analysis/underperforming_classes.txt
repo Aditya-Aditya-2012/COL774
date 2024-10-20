@@ -1,6 +1,6 @@
 Classes with accuracy <= mean - 2*std:
-Class 10: 52.75%
-Class 11: 54.88%
-Class 35: 41.56%
-Class 55: 54.65%
-Class 72: 51.16%
+Class 10 (10): 52.75%
+Class 11 (11): 54.88%
+Class 35 (35): 41.56%
+Class 55 (55): 54.65%
+Class 72 (72): 51.16%
