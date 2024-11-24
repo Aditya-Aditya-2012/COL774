@@ -4,10 +4,13 @@ import pickle
 import argparse
 from part_d_trainloader import TrainImageDataset, TrainDataLoader, numpy_transform 
 from part_d_testloader import TestImageDataset, TestDataLoader, numpy_transform 
-from scipy.special import erf
+import math
 import time
 
 np.random.seed(0)
+
+def erf(x):
+    return np.vectorize(math.erf)(x)
 
 # Dataloader
 def load_train_data(dataset_root):
@@ -332,6 +335,20 @@ class NeuralNetwork:
         return cross_entropy
 
     def train(self, X_train, Y_train, X_val, Y_val, X_test, epochs=15, batch_size=256, optimizer='gd', wt_path='results', pr_path='results', time_limiter = 875):
+        # wt_directory = wt_path
+        # wt_file_name = "weights.pkl"
+        wt_file_path = wt_path
+
+        # pr_directory = pr_path
+        # pr_file_name = "predictions.pkl"
+        pr_file_path = pr_path
+
+        # if not os.path.exists(wt_directory):
+        #     os.makedirs(wt_directory)
+
+        # if not os.path.exists(pr_directory):
+        #     os.makedirs(pr_directory)
+
         best_loss = float('inf')
         n_batches = Y_train.shape[0] / batch_size
 
@@ -367,8 +384,8 @@ class NeuralNetwork:
 
             if (loss_val) < best_loss:
                 best_loss = loss_val
-                self.save_weights(wt_path)
-                self.save_predictions(pr_path, out_test)
+                self.save_weights(wt_file_path)
+                self.save_predictions(pr_file_path, out_test)
 
             elapsed_time = time.time() - start_time
             if(elapsed_time > time_limiter) :
