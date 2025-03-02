@@ -84,7 +84,7 @@ class NeuralNetwork:
 
         return self.a4
 
-    def backward(self, X, Y, output,) :
+    def backward(self, X, Y, output) :
         m = Y.shape[0] 
 
         output_delta = output - Y

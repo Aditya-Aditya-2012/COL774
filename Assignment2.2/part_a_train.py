@@ -54,7 +54,7 @@ def train_model(train_loader, save_weights_path):
 
         # Save model state after each epoch
         torch.save(model.state_dict(), save_weights_path)
-        # print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader)}')
+        print(f'Epoch {epoch+1}/{num_epochs}, Loss: {running_loss/len(train_loader)}')
 
 if __name__ == "__main__":
     # Parse command line arguments

@@ -382,6 +382,7 @@ class NeuralNetwork:
 
             out_test = self.forward(X_test)
 
+            print(f'loss: {loss_val}')
             if (loss_val) < best_loss:
                 best_loss = loss_val
                 self.save_weights(wt_file_path)
@@ -425,4 +426,4 @@ if __name__ == '__main__':
 
     nn = NeuralNetwork(learning_rate=0.001)
 
-    nn.train(X_train, Y_train, X_val, Y_val, X_test, epochs=5000, batch_size=256, optimizer='adam', wt_path=args.save_weights_path, pr_path=args.save_predictions_path, time_limiter=850)
+    nn.train(X_train, Y_train, X_val, Y_val, X_test, epochs=5000, batch_size=256, optimizer='adam', wt_path=args.save_weights_path, pr_path=args.save_predictions_path, time_limiter=120)

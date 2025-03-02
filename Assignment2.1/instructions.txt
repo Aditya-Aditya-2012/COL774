@@ -1,0 +1,7 @@
+for 2.1 d
+python part_d_multi_best.py --dataset_root dataA2/multi_dataset --test_dataset_root dataA2/multi_dataset/ --save_weights_path result_d/res.pkl --save_predictions_path result_d/pr.pkl
+the folders should be created already
+
+for 2.1 c
+python part_c_multi_best.py --dataset_root /home/civil/btech/ce1210494/COL774/Assignment2.1/dataA2/multi_dataset --save_weights_path result_c/res.pkl
+the folders should be created already

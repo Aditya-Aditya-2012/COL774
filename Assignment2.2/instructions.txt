@@ -1,0 +1,4 @@
+2.2 a
+python part_a_train.py --train_dataset_root dataset_for_A2.2/binary_dataset --save_weights_path train_a/weights.pkl
+folder should already exist
+

@@ -323,7 +323,8 @@ class NeuralNetwork:
                 num_samples += Y_batch.shape[0]
 
                 self.backward(X_batch, Y_batch, Y_pred, optimizer, t=epoch+1)
-        
+
+            print(f'loss :{epoch_loss/num_samples}')
             if epoch_loss/num_samples < best_loss:
                 best_loss = epoch_loss/num_samples
                 self.save_weights(path)
